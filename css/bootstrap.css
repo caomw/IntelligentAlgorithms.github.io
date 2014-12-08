@@ -361,6 +361,7 @@ h6,
   font-weight: 500;
   line-height: 1.2;
   color: inherit;
+  text-align: left !important;
 }
 h1 small,
 h2 small,
@@ -5786,14 +5787,14 @@ body > blockquote {
 
 
 .classA {
-  fill: steelblue;
+  fill: #1f78b4;
 }
 
 .classB {
-  fill: darkred;
+  fill: #ff7f00;
 }
 .classC {
-  fill: darkgreen;
+  fill: #33a02c;
 }
 .unkown{
   stroke: #666;
