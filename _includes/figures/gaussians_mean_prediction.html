@@ -1,0 +1,117 @@
+<svg id="meanchart2"></svg>
+
+<script>
+(function(global) {
+ "use strict";
+var mu_1 = 0;
+var mu_2 = 3;
+var sigma = 0.5;
+
+
+var width  = 620,
+    height = 320;
+
+var xValue = function(d) { return d.x;},               // data -> value
+    xScale = d3.scale.linear().range([0, width]),      // value -> display
+    xMap   = function(d) { return xScale(xValue(d));}, // data -> display
+    xAxis  = d3.svg.axis().scale(xScale).orient("bottom");
+
+var yValue = function(d) { return d.y;},               // data -> value
+    yScale = d3.scale.linear().range([height, 0]),     // value -> display
+    yMap   = function(d) { return yScale(yValue(d));}, // data -> display
+    yAxis  = d3.svg.axis().scale(yScale).orient("left");
+
+var data = [];
+var meancharPlot;
+var centroids = [{x:0,y:0},{x:0,y:0}];
+
+var unkown = [{x:1,y:1}];
+
+for (var i = 0; i < 50; i++) {
+
+    var el_0 = {
+            x : normalDistr(mu_1,sigma), 
+            y : normalDistr(mu_1,sigma), 
+            label: 0};
+    var el_1 = {
+            x : normalDistr(mu_2,sigma), 
+            y : normalDistr(mu_2,sigma), 
+            label: 1};
+
+    centroids[0].x += el_0.x;
+    centroids[0].y += el_0.y;
+    centroids[1].x += el_1.x;
+    centroids[1].y += el_1.y;
+
+
+        data.push(el_0);
+        data.push(el_1);
+    };
+
+    centroids[0].x /= 50;
+    centroids[0].y /= 50;
+    centroids[1].x /= 50;
+    centroids[1].y /= 50;
+
+
+    xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+    yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+
+    meancharPlot = d3.select("#meanchart2")
+        .attr("width", width)
+        .attr("height", height);
+
+    // draw data points
+    meancharPlot.selectAll(".dot")
+          .data(data)
+          .enter()
+          .append("circle")
+          .attr("class", function(d){
+            if(d.label == 1)
+                return "classA";
+            return "classB";
+          })
+          .attr("r", 3.5)
+          .attr("cx", xMap)
+          .attr("cy", yMap);
+
+    // draw unkown
+    meancharPlot.selectAll(".dot")
+          .data(unkown)
+          .enter().append("circle")
+          .attr("class","unkown")
+          .attr("r", 4.5)
+          .attr("cx", xScale(unkown[0].x))
+          .style("stroke-width", 3)
+          .style('stroke','gray')
+          .attr("cy", yScale(unkown[0].y));
+
+    // make dynamic      
+    meancharPlot
+    .on("mousemove", function() { 
+        var pt = d3.mouse(this); 
+        meancharPlot
+        .selectAll(".unkown")
+        .data(unkown)
+        .attr("cx", pt[0])
+        .attr("cy", pt[1])
+        .style("stroke",function(d){
+
+            var dist_a = (pt[0]-xMap(centroids[0]))*(pt[0]-xMap(centroids[0])) + (pt[1]-yMap(centroids[0]))*(pt[1]-yMap(centroids[0]));
+            var dist_b = (pt[0]-xMap(centroids[1]))*(pt[0]-xMap(centroids[1])) + (pt[1]-yMap(centroids[1]))*(pt[1]-yMap(centroids[1]));
+
+            if(dist_a < dist_b){
+                return "#ff7f00";
+            }else{
+                return "#1f78b4";
+            }
+        });
+    });
+
+    
+
+
+
+})();
+
+</script>

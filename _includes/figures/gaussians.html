@@ -1,21 +1,13 @@
-function rnd_bmt(mu,std) {
-    var x = 0, y = 0, rds, c;
-    do {
-    x = Math.random()*2-1;
-    y = Math.random()*2-1;
-    rds = x*x + y*y;
-    }
-    while (rds == 0 || rds > 1)
-    c = Math.sqrt(-2*Math.log(rds)/rds);
-    return x*c*std+mu;
-}
+<svg id="meanchart"></svg>
+
+<script>
+(function(global) {
+
 var mu_1 = 0;
 var mu_2 = 3;
 var sigma = 0.5;
 
-var data = [];
 
-var meancharPlot;
 var width  = 620,
     height = 320;
 
@@ -29,15 +21,18 @@ var yValue = function(d) { return d.y;},               // data -> value
     yMap   = function(d) { return yScale(yValue(d));}, // data -> display
     yAxis  = d3.svg.axis().scale(yScale).orient("left");
 
+var data = [];
+var meancharPlot;
+
 function updateMeanchart(){
     for (var i = 0; i < 50; i+=2) {
         data[i] = {
-            x : rnd_bmt(0,sigma), 
-            y : rnd_bmt(0,sigma), 
+            x : normalDistr(mu_1,sigma), 
+            y : normalDistr(mu_1,sigma), 
             label: 0};
         data[i+1] = {
-            x : rnd_bmt(3,sigma), 
-            y : rnd_bmt(3,sigma), 
+            x : normalDistr(mu_2,sigma), 
+            y : normalDistr(mu_2,sigma), 
             label: 1};
     };
 
@@ -49,31 +44,30 @@ function updateMeanchart(){
         .attr("cy", yMap);
 }
 
-function meanchart(){
-    
-    for (var i = 0; i < 50; i++) {
+
+
+for (var i = 0; i < 50; i++) {
         data.push({
-            x : rnd_bmt(0,sigma), 
-            y : rnd_bmt(0,sigma), 
+            x : normalDistr(mu_1,sigma), 
+            y : normalDistr(mu_1,sigma), 
             label: 0});
         data.push({
-            x : rnd_bmt(3,sigma), 
-            y : rnd_bmt(3,sigma), 
+            x : normalDistr(mu_2,sigma), 
+            y : normalDistr(mu_2,sigma), 
             label: 1});
     };
-
 
     xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
     yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
 
-
-    meancharPlot = d3.select(".meanchart")
+    meancharPlot = d3.select("#meanchart")
         .attr("width", width)
         .attr("height", height);
 
     meancharPlot.selectAll(".dot")
           .data(data)
-          .enter().append("circle")
+          .enter()
+          .append("circle")
           .attr("class", function(d){
             if(d.label == 1)
                 return "classA";
@@ -83,14 +77,22 @@ function meanchart(){
           .attr("cx", xMap)
           .attr("cy", yMap);
 
+    var unkown = [{x:1,y:1}];
+
     meancharPlot.selectAll(".dot")
-          .data([{x:1,y:1}])
+          .data(unkown)
           .enter().append("circle")
           .attr("class","unkown")
-          .attr("r", 4.5)
-          .attr("cx", xMap)
-          .attr("cy", yMap);
-}
+          .attr("r", 3.5)
+          .attr("cx", xScale(unkown[0].x))
+          .style("stroke-width", 3)
+          .style('stroke','gray')
+          .attr("cy", yScale(unkown[0].y));
+
 setInterval(function() {
   updateMeanchart();
 }, 1500);
+
+})();
+
+</script>

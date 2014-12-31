@@ -7,15 +7,20 @@
     <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
     <link href='http://fonts.googleapis.com/css?family=Libre+Baskerville:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="{{ "/css/bootstrap.css" | prepend: site.baseurl }}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="{{ "/js/vendor/d3.v3.min.js" | prepend: site.baseurl }}"></script>
-    <script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
+    <script src="{{ "/js/functions.js" | prepend: site.baseurl }}"></script>
+    <script type="text/javascript" 
+    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" 
+    src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
     <style>
         body {
             padding-top: 50px;
             padding-bottom: 20px;
         }
+        
     </style>
 
     <script src="{{ "/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js" | prepend: site.baseurl }}"></script>

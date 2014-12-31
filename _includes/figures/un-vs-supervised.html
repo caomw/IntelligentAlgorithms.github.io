@@ -1,0 +1,73 @@
+<svg id="un-vs-supervised"></svg>
+
+<script>
+(function(global) {
+
+var mu_1 = 0;
+var mu_2 = 3;
+var sigma = 0.5;
+
+
+var width  = 620,
+    height = 320;
+
+var xValue = function(d) { return d.x;},               // data -> value
+    xScale = d3.scale.linear().range([0, width/2]),      // value -> display
+    xMap   = function(d) { return xScale(xValue(d));}, // data -> display
+    xMapp  = function(d) { return xScale(xValue(d))+width/2;}, // data -> display
+    xAxis  = d3.svg.axis().scale(xScale).orient("bottom");
+
+var yValue = function(d) { return d.y;},               // data -> value
+    yScale = d3.scale.linear().range([height, 0]),     // value -> display
+    yMap   = function(d) { return yScale(yValue(d));}, // data -> display
+    yAxis  = d3.svg.axis().scale(yScale).orient("left");
+
+var data = [];
+var meancharPlot;
+
+
+for (var i = 0; i < 50; i++) {
+        data.push({
+            x : normalDistr(mu_1,sigma), 
+            y : normalDistr(mu_1,sigma), 
+            label: 0});
+        data.push({
+            x : normalDistr(mu_2,sigma), 
+            y : normalDistr(mu_2,sigma), 
+            label: 1});
+    };
+
+    xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+    yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+
+    meancharPlot = d3.select("#un-vs-supervised")
+        .attr("width", width)
+        .attr("height", height);
+
+    meancharPlot.selectAll(".dot")
+          .data(data)
+          .enter()
+          .append("circle")
+          .attr("class", function(d){
+            if(d.label == 1)
+                return "classA";
+            return "classB";
+          })
+          .attr("r", 3.5)
+          .attr("cx", xMap)
+          .attr("cy", yMap);
+
+    meancharPlot.selectAll(".dot")
+          .data(data)
+          .enter()
+          .append("circle")
+          .attr("class", "unkown")
+          .attr("r", 3.5)
+          .attr("cx", xMapp)
+          .attr("cy", yMap);
+
+
+
+})();
+
+</script>

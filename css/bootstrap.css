@@ -5789,8 +5789,12 @@ body > blockquote {
 .classA {
   fill: #1f78b4;
 }
+.lineA{stroke:#1f78b4;}
 
 .classB {
+  fill: #ff7f00;
+}
+.strokeB {
   fill: #ff7f00;
 }
 .classC {
@@ -5804,3 +5808,29 @@ body > blockquote {
 .dot {
   stroke: #000;
 }
+
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+svg{
+  border:1px solid #ccc; 
+  text-align: center;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  border-radius: 7px;
+  display: block; 
+  margin: auto;
+}
+.helper{stroke:#666;stroke-dasharray:3,3;}
