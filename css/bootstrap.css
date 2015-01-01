@@ -5834,3 +5834,5 @@ svg{
   margin: auto;
 }
 .helper{stroke:#666;stroke-dasharray:3,3;}
+
+code,pre{font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 11px !important; line-height: 12px !important; color:#4a4543;} /*#01a252*/

@@ -1,43 +1,26 @@
-<svg id="lsd-math-plot"></svg>
-
+<svg id="linreg-prob-plot"></svg>
 <div style="float:right; margin-top:3px;margin-bottom:3px;">
-alpha: <input type="text" id="alpha_linreg" value="0">
-beta: <input type="text" id="beta_linreg" value="50">
-<input type="button" onclick="resetfield('#alpha_linreg',0);resetfield('#beta_linreg',50);" value="reset">
-<input type="button" onclick="resetfield('#alpha_linreg',-9.00);resetfield('#beta_linreg',89.1239);" value="get best values">
+sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
+<input type="button" onclick="resetfield('#alpha_linreg',10);resetfield('#beta_linreg',50);" value="reset">
 </div>
 <div style="clear:right;"> 
 </div>
 
+
 <script>
-function resetfield(el,v){
-    $(el).val(v);
-}
+
 
     (function(global) {
 
-        var data = [{
-            x: 1.17,
-            y: 78.93
-        }, {
-            x: 2.97,
-            y: 58.20
-        }, {
-            x: 3.26,
-            y: 67.47
-        }, {
-            x: 4.69,
-            y: 37.47
-        }, {
-            x: 5.83,
-            y: 45.65
-        }, {
-            x: 6.00,
-            y: 32.92
-        }, {
-            x: 6.41,
-            y: 29.97
-        }];
+        var sigma = $("#linreg-prob-sigma").val();
+
+        var data = [];
+        for (var i = 0; i < 50; i++) {
+            var el_x = i;
+            var el_y = 3*i+2 + normalDistr(0,sigma);
+            var el = {x:el_x, y:el_y}
+            data.push(el);
+        };
         // Set the dimensions of the canvas / graph
         var margin = {
             top: 30,
@@ -61,26 +44,16 @@ function resetfield(el,v){
             .orient("left").ticks(5);
 
         // Define the line
-        var valueline = d3.svg.line()
-            .x(function(d) {
-                return x(d.x);
-            })
-            .y(function(d) {
-                return y(d.y);
-            });
         var valueLinReg = d3.svg.line()
             .x(function(d) {
                 return x(d.x);
             })
             .y(function(d) {
-                var tx = +$("#alpha_linreg").val();
-                var ty = +$("#beta_linreg").val();
-
-                return y( tx*d.x+ty );
+                return y( 3*d.x+2);
             });
 
         // Adds the svg canvas
-        var svg = d3.select("#lsd-math-plot")
+        var svg = d3.select("#linreg-prob-plot")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -96,14 +69,22 @@ function resetfield(el,v){
             return d.y;
         }));
 
-        function updateLinReg(){
+        function update(){
+            sigma = $("#linreg-prob-sigma").val();
+            data = [];
+            for (var i = 0; i < 50; i++) {
+                var el_x = i;
+                var el_y = 3*i+2 + normalDistr(0,sigma);
+                var el = {x:el_x, y:el_y}
+                data.push(el);
+            };
+            svg.selectAll("circle").data(data)
+                .transition()
+                .duration(1200)
+                .attr("cx", function(d) { return x(d.x); })
+                .attr("cy", function(d) { return y(d.y); });
 
-
-    svg.selectAll("#regline")
-        .transition()
-        .duration(1200)
-        .attr("d", valueLinReg(data));
-}
+        }
 
         // Add the valueline path.
         svg.selectAll('.data-point')
@@ -138,17 +119,17 @@ function resetfield(el,v){
             .attr("text-anchor", "end")
             .attr("x", width)
             .attr("y", height - 6)
-            .text("lsd");
+            .text("x");
         svg.append("text")
             .attr("class", "y label")
             .attr("text-anchor", "end")
             .attr("y", 6)
             .attr("dy", ".75em")
             .attr("transform", "rotate(-90)")
-            .text("mean math score");
+            .text("y");
 
         setInterval(function() {
-          updateLinReg();
+          update();
         }, 1500);
 
     })();
