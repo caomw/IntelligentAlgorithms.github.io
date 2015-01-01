@@ -1,0 +1,156 @@
+<svg id="linreg-compare-plot"></svg>
+
+<script>
+
+
+    (function(global) {
+
+
+        var data = [];
+        
+        // Set the dimensions of the canvas / graph
+        var margin = {
+            top: 30,
+            right: 20,
+            bottom: 30,
+            left: 50
+        },
+            width = 600 - margin.left - margin.right,
+            height = 270 - margin.top - margin.bottom;
+
+
+        // Set the ranges
+        var x = d3.scale.linear().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+
+        // Define the axes
+        var xAxis = d3.svg.axis().scale(x)
+            .orient("bottom").ticks(5);
+
+        var yAxis = d3.svg.axis().scale(y)
+            .orient("left").ticks(5);
+
+        
+
+        // Adds the svg canvas
+        var svg = d3.select("#linreg-compare-plot")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        var rect =  svg.append("rect")
+        .attr("x", 0).attr("y", 0).attr("height", height).attr("width", width).attr("fill","none").attr("pointer-events", "all");
+         rect.on('click', function() {
+            var coords = d3.mouse(this);
+            data.push({x:coords[0], y:coords[1]});
+           
+            update();
+        });
+
+         var dummy = [{x:0,y:10},{x:10,y:0},{x:0,y:0},{x:10,y:10}];
+
+    
+         // Scale the range of the data
+        x.domain(d3.extent(dummy, function(d) {
+            return d.x;
+        }));
+        y.domain(d3.extent(dummy, function(d) {
+            return d.y;
+        }));
+
+        function pinv(A) {
+            return numeric.dot(numeric.inv(numeric.dot(numeric.transpose(A),A)),numeric.transpose(A));
+        }
+
+        var alpha = 1;
+        var beta = 0;
+
+         var valueLinReg = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+
+                return  y(alpha*d.x+beta );
+            });
+
+        function update(){
+
+             svg.selectAll(".dot").remove();
+            svg.selectAll(".dot")
+              .data(data)
+              .enter()
+              .append("circle")
+              .attr("r", 3.5)
+              .attr("class", "classA")
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });  
+
+           
+           
+
+             if(data.length > 1){
+
+ var n_x = [];
+            var n_y = [];
+            // create matrix
+            for (var i = 0; i < data.length; i++) {
+                n_x.push([1,data[i].x]);
+                n_y.push([data[i].y]);
+            };
+
+            var p = numeric.dot(pinv(n_x),n_y);
+            console.log(p);
+
+            alpha = p[0][0];
+
+            beta = p[1][0];
+            console.log(alpha);
+            console.log(beta);
+
+
+                svg.selectAll("#regline")
+            .transition()
+            .duration(1200)
+            .attr("d", valueLinReg(dummy));
+             }
+        }
+
+        svg.append("path")
+            .attr("class", "line helper")
+            .attr("id", "regline")
+            .attr("d", valueLinReg(dummy));
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        // Add the Y Axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+        svg.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height - 6)
+            .text("x");
+
+        svg.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "end")
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text("y");
+
+       
+
+
+    })();
+</script>
