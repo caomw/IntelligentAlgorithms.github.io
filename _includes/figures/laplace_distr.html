@@ -1,30 +1,31 @@
-<div class="figure">
 
-<svg id="linreg-prob-plot"></svg>
-<div class="caption">Each data point is drawn from the underlying linear model plus some noise.</div>
+<div class="figure">
+<svg id="laplace-distr-plot"></svg>
+<div class="caption">I suggest to use values between 1 and 5 for b.</div>
 
 <span class="buttons">
-sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
-<input type="button" onclick="resetfield('#linreg-prob-sigma',10);resetfield('#beta_linreg',50);" value="reset">
+mu: <input type="text" id="param_a" value="0">
+b: <input type="text" id="param_b" value="1">
+<input type="button" onclick="resetfield('#param_a',0);resetfield('#param_b',1);" value="reset">
 </span>
 
 
 </div>
 
+
+
 <script>
 
 
     (function(global) {
-
-        var sigma = $("#linreg-prob-sigma").val();
+        var mu = +$("#param_a").val();
+        var b = +$("#param_b").val();
 
         var data = [];
-        for (var i = 0; i < 50; i++) {
-            var el_x = i;
-            var el_y = 3*i+2 + normalDistr(0,sigma);
-            var el = {x:el_x, y:el_y}
-            data.push(el);
+        for (var i = -15; i < 15; i+=0.5) {
+            data.push({x:i,y:LaplaceDensity(i,mu,b)});
         };
+
         // Set the dimensions of the canvas / graph
         var margin = {
             top: 30,
@@ -34,6 +35,8 @@ sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
         },
             width = 600 - margin.left - margin.right,
             height = 270 - margin.top - margin.bottom;
+
+        
 
 
         // Set the ranges
@@ -48,16 +51,16 @@ sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
             .orient("left").ticks(5);
 
         // Define the line
-        var valueLinReg = d3.svg.line()
+        var valueline = d3.svg.line()
             .x(function(d) {
                 return x(d.x);
             })
             .y(function(d) {
-                return y( 3*d.x+2);
+                return y(LaplaceDensity(d.x,mu,b));
             });
 
         // Adds the svg canvas
-        var svg = d3.select("#linreg-prob-plot")
+        var svg = d3.select("#laplace-distr-plot")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -74,38 +77,19 @@ sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
         }));
 
         function update(){
-            sigma = $("#linreg-prob-sigma").val();
-            data = [];
-            for (var i = 0; i < 50; i++) {
-                var el_x = i;
-                var el_y = 3*i+2 + normalDistr(0,sigma);
-                var el = {x:el_x, y:el_y}
-                data.push(el);
-            };
-            svg.selectAll("circle").data(data)
+            mu = +$("#param_a").val();
+            b = +$("#param_b").val();
+            svg.selectAll("#regline")
                 .transition()
                 .duration(1200)
-                .attr("cx", function(d) { return x(d.x); })
-                .attr("cy", function(d) { return y(d.y); });
-
+                .attr("d", valueline(data));
         }
 
-        // Add the valueline path.
-        svg.selectAll('.data-point')
 
-          .data(data)
-          .enter()
-          .append("circle")
-          .attr("class","classA")
-          .attr("r", 3.5)
-          .attr("cx", function(d) { return x(d.x); })
-
-          .attr("cy", function(d) { return y(d.y); });
-
-        var line = svg.append("path")
-            .attr("class", "line helper")
+        svg.append("path")
+            .attr("class", "lineA")
             .attr("id", "regline")
-            .attr("d", valueLinReg(data));
+            .attr("d", valueline(data));
 
         // Add the X Axis
         svg.append("g")
@@ -124,28 +108,20 @@ sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
             .attr("x", width)
             .attr("y", height - 6)
             .text("x");
+
         svg.append("text")
             .attr("class", "y label")
             .attr("text-anchor", "end")
             .attr("y", 6)
             .attr("dy", ".75em")
             .attr("transform", "rotate(-90)")
-            .text("y");
-
-        var refreshIntervalId = null;
-
-        whenFullyVisible(line.node(), function(){
-            refreshIntervalId = setInterval(function() {
-
-            whenFullyVisible(line.node(),function(){
-                update();
-            });
-
-          
-        }, 1500);
-        });
+            .text("p(x,mu,b)");
 
         
+        setInterval(function() {
+          update();
+        }, 1500);
+
 
     })();
 </script>

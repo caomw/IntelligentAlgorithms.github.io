@@ -1,13 +1,53 @@
+<div class="figure">
+
 <svg id="linreg-compare-plot"></svg>
+<div class="caption">Use a left-click to add a data point or load an example by clicking the button..</div>
+
+<span class="buttons">
+lambda <input type="text" onkeyup="linreg_compar_update();" id="linreg-compare-lambda" value="1">
+<input type="button" onclick="linreg_compar_clear();linreg_compar_update();" value="clear">
+<input type="button" onclick="linreg_compar_undo();linreg_compar_update();" value="undo">
+<input type="button" onclick="linreg_compar_example();linreg_compar_update();" value="example">
+</span>
+
+
+</div>
 
 <script>
 
+function linreg_compar_clear(){
+    console.log("clear data");
+    linreg_compar_hdata = [];
+    $("#linreg-compare-lambda").val(0);
+
+}
+function linreg_compar_undo(){
+    linreg_compar_hdata.pop();;
+
+
+}
+function linreg_compar_example(){
+    $("#linreg-compare-lambda").val(5);
+    linreg_compar_hdata = [];
+    for (var i = 0; i < 10; i++) {
+        linreg_compar_hdata.push({x:i,y:i});
+    };
+    linreg_compar_hdata.push({x:2,y:10});
+    linreg_compar_hdata.push({x:2.5,y:10});
+    linreg_compar_hdata.push({x:3,y:10});
+    
+
+}
+
+var linreg_compar_update = function(){};
+
+var linreg_compar_hdata = [];
 
     (function(global) {
 
 
-        var data = [];
         
+
         // Set the dimensions of the canvas / graph
         var margin = {
             top: 30,
@@ -30,7 +70,7 @@
         var yAxis = d3.svg.axis().scale(y)
             .orient("left").ticks(5);
 
-        
+
 
         // Adds the svg canvas
         var svg = d3.select("#linreg-compare-plot")
@@ -40,19 +80,35 @@
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
 
-        var rect =  svg.append("rect")
-        .attr("x", 0).attr("y", 0).attr("height", height).attr("width", width).attr("fill","none").attr("pointer-events", "all");
-         rect.on('click', function() {
+        var rect = svg.append("rect")
+            .attr("x", 0).attr("y", 0).attr("height", height).attr("width", width).attr("fill", "none").attr("pointer-events", "all");
+        rect.on('click', function() {
             var coords = d3.mouse(this);
-            data.push({x:coords[0], y:coords[1]});
-           
+
+            var el = {
+                x: x.invert(coords[0]),
+                y: y.invert(coords[1])
+            };
+            linreg_compar_hdata.push(el);
             update();
         });
 
-         var dummy = [{x:0,y:10},{x:10,y:0},{x:0,y:0},{x:10,y:10}];
+        var dummy = [{
+            x: 0,
+            y: 10
+        }, {
+            x: 10,
+            y: 0
+        }, {
+            x: 0,
+            y: 0
+        }, {
+            x: 10,
+            y: 10
+        }];
 
-    
-         // Scale the range of the data
+
+        // Scale the range of the data
         x.domain(d3.extent(dummy, function(d) {
             return d.x;
         }));
@@ -60,68 +116,113 @@
             return d.y;
         }));
 
-        function pinv(A) {
-            return numeric.dot(numeric.inv(numeric.dot(numeric.transpose(A),A)),numeric.transpose(A));
+        function ols(A) {
+            return numeric.dot(numeric.inv(numeric.dot(numeric.transpose(A), A)), numeric.transpose(A));
+        }
+        function ridge(A) {
+            var lambda = +$("#linreg-compare-lambda").val();
+            var tmp = numeric.dot(numeric.transpose(A), A);
+            console.log(tmp.length);
+            var d = [];
+            for (var i = 0; i < tmp.length; i++) {
+                d.push(lambda);
+            };
+            var tmp2 = numeric.diag(d);
+            console.log(tmp2);
+            return numeric.dot(numeric.inv(numeric.add(tmp , tmp2)), numeric.transpose(A));
         }
 
-        var alpha = 1;
-        var beta = 0;
+        var alpha_ols = 1;
+        var alpha_ridge = 1;
+        var beta_ols = 0;
+        var beta_ridge = 0;
 
-         var valueLinReg = d3.svg.line()
+        var valueOlsLine = d3.svg.line()
             .x(function(d) {
                 return x(d.x);
             })
             .y(function(d) {
 
-                return  y(alpha*d.x+beta );
+                return y(alpha_ols * d.x + beta_ols);
+            });
+        var valueRidgeLine = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+
+                return y(alpha_ridge * d.x + beta_ridge);
             });
 
-        function update(){
+        function update() {
+            console.log("run update");
 
-             svg.selectAll(".dot").remove();
-            svg.selectAll(".dot")
-              .data(data)
-              .enter()
-              .append("circle")
-              .attr("r", 3.5)
-              .attr("class", "classA")
-            .attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; });  
-
-           
-           
-
-             if(data.length > 1){
-
- var n_x = [];
-            var n_y = [];
-            // create matrix
-            for (var i = 0; i < data.length; i++) {
-                n_x.push([1,data[i].x]);
-                n_y.push([data[i].y]);
-            };
-
-            var p = numeric.dot(pinv(n_x),n_y);
-            console.log(p);
-
-            alpha = p[0][0];
-
-            beta = p[1][0];
-            console.log(alpha);
-            console.log(beta);
+            points.selectAll("circle").remove();
+            
+            if(linreg_compar_hdata.length > 0){
+                points
+                .selectAll(".dot")
+                .data(linreg_compar_hdata)
+                .enter()
+                .append("circle")
+                .attr("r", 3.5)
+                .attr("class", "classA")
+                .attr("cx", function(d) {
+                    return x(d.x);
+                })
+                .attr("cy", function(d) {
+                    return y(d.y);
+                });
+            }
 
 
-                svg.selectAll("#regline")
-            .transition()
-            .duration(1200)
-            .attr("d", valueLinReg(dummy));
-             }
+
+
+            if (linreg_compar_hdata.length > 1) {
+
+                var n_x = [];
+                var n_y = [];
+                // create matrix
+                for (var i = 0; i < linreg_compar_hdata.length; i++) {
+                    n_x.push([1, linreg_compar_hdata[i].x]);
+                    n_y.push([linreg_compar_hdata[i].y]);
+                };
+
+                var p = numeric.dot(ols(n_x), n_y);
+                alpha_ols = p[1][0];
+                beta_ols = p[0][0];
+
+                var p = numeric.dot(ridge(n_x), n_y);
+                alpha_ridge = p[1][0];
+                beta_ridge = p[0][0];
+  
+
+
+                svg.selectAll("#olsLine")
+                    .transition()
+                    .duration(1200)
+                    .attr("d", valueOlsLine(dummy));
+                svg.selectAll("#ridgeLine")
+                    .transition()
+                    .duration(1200)
+                    .attr("d", valueRidgeLine(dummy));
+            }else{
+                points.selectAll(".dot").remove();
+            }
         }
+        linreg_compar_update = update;
+
 
         svg.append("path")
-            .attr("class", "line helper")
-            .attr("id", "regline")
-            .attr("d", valueLinReg(dummy));
+            .attr("class", "lineB")
+            .attr("id", "olsLine")
+            .attr("data-legend","ols regression")
+            .attr("d", valueOlsLine(dummy));
+        svg.append("path")
+            .attr("id", "ridgeLine")
+            .attr("class", "lineC")
+            .attr("data-legend","ridge regression")
+            .attr("d", valueRidgeLine(dummy));
 
         // Add the X Axis
         svg.append("g")
@@ -149,7 +250,14 @@
             .attr("transform", "rotate(-90)")
             .text("y");
 
-       
+        legend = svg.append("g")
+            .attr("class","legend")
+            .attr("transform","translate(50,30)")
+            .style("font-size","12px")
+            .call(d3.legend)
+
+        var points = svg.append("g").attr("class","datapoints");
+
 
 
     })();

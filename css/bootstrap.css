@@ -5794,11 +5794,14 @@ body > blockquote {
 .classB {
   fill: #ff7f00;
 }
-.strokeB {
-  fill: #ff7f00;
+.lineB {
+  stroke: #ff7f00;
 }
 .classC {
   fill: #33a02c;
+}
+.lineC {
+  stroke: #33a02c;
 }
 .unkown{
   stroke: #666;
@@ -5824,15 +5827,39 @@ path {
     shape-rendering: crispEdges;
 }
 
+.legend rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;}
+
 svg{
-  border:1px solid #ccc; 
-  text-align: center;
-  -webkit-border-radius: 7px;
-  -moz-border-radius: 7px;
-  border-radius: 7px;
+  
   display: block; 
   margin: auto;
 }
 .helper{stroke:#666;stroke-dasharray:3,3;}
 
-code,pre{font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 11px !important; line-height: 12px !important; color:#4a4543;} /*#01a252*/
+code,pre{font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; 
+font-size: 11px !important; 
+line-height: 12px !important; 
+color:#4a4543;} /*#01a252*/
+
+.figure{
+  /*border:1px solid #ccc;*/ 
+  text-align: center;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  border-radius: 7px;
+  padding:5px;}
+.figure > .caption{
+  font-family: 'trebuchet ms', Verdana;
+  font-style: italic; 
+  font-size:12px; }
+.figure >.buttons{
+  
+  margin-top:3px;
+  margin-bottom:3px;
+   width:600px;
+}
+
+.figure:after{clear:right;}

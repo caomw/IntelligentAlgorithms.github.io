@@ -1,13 +1,19 @@
-<svg id="lsd-math-plot"></svg>
 
-<div style="float:right; margin-top:3px;margin-bottom:3px;">
+<div class="figure">
+<svg id="lsd-math-plot"></svg>
+<div class="caption">Adjust the slope alpha and the intersection beta to match the datapoints.</div>
+
+<span class="buttons">
 alpha: <input type="text" id="alpha_linreg" value="0">
 beta: <input type="text" id="beta_linreg" value="50">
 <input type="button" onclick="resetfield('#alpha_linreg',0);resetfield('#beta_linreg',50);" value="reset">
 <input type="button" onclick="resetfield('#alpha_linreg',-9.00);resetfield('#beta_linreg',89.1239);" value="get best values">
+</span>
+
+
 </div>
-<div style="clear:right;"> 
-</div>
+
+
 
 <script>
 function resetfield(el,v){
