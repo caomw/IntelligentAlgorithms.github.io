@@ -89,4 +89,13 @@ I(f,h)
 \end{align*}
 $$
 
-However, this seems to be a dead end because we need information about the true model. Fortunately, Akaike shows that it is sufficient to minimize $$\mathbb{E}_y\mathbb{E}_x \left[ \log g(x,\hat{\beta}\right]$$
+However, this seems to be a dead end because we need information about the true model. Fortunately, Akaike showed that 
+$$\log \left( L(\hat{\beta}\vert \mathcal{D}) \right)$$ is a biased estimate which is necessary to know to minimize the Kullback-Leibler distance. More precise, the equation
+
+$$\log \left( L(\hat{\beta}\vert \mathcal{D}) \right) - k=\mathbb{E}_f[\log g(x,\beta)]- \hat{\mathbb{E}}_{\hat{\beta}}[I(f,\hat{g})]$$
+
+holds, where we denote $$\hat{g}=g(x\vert \hat{\beta}(y))$$ and $$k$$ the number of parameters. The Akaike-Information-Criterion is defined as
+
+$$2k-2\log \left( L(\hat{\beta}\vert \mathcal{D}) \right).$$
+
+To now chose the a good model from a set of models we use the ACI values for each model

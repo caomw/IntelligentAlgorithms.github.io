@@ -103,7 +103,7 @@ sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
           .attr("cy", function(d) { return y(d.y); });
 
         var line = svg.append("path")
-            .attr("class", "line helper")
+            .attr("class", "line helper grayLine")
             .attr("id", "regline")
             .attr("d", valueLinReg(data));
 

@@ -1,0 +1,263 @@
+
+<div class="figure">
+<svg id="gradient-descent-plot"></svg>
+<div class="caption">Move the mouse over the graph to see the direction of the gradient</div>
+
+<!-- <input type="button" onclick="gradient_descent_plot_make_play()" value="▶ Play"> -->
+<input type="button" onclick="gradient_descent_plot_make_step(this)" value="step">
+<input type="button" onclick="gradient_descent_plot_make_reset()" value="reset">
+</div>
+
+
+
+<script>
+
+var gradient_descent_plot_make_step = function(){};
+var gradient_descent_plot_make_reset = function(){};
+var gradient_descent_plot_make_play = function(){};
+    (function(global) {
+
+        var objective = function(x){
+            return Math.cos(x/15*Math.PI)*60+Math.cos(x/8*Math.PI)*40;
+        }
+        var gradient = function(x){
+            return -Math.PI *(4 *Math.sin((Math.PI *x)/15)+5 *Math.sin((Math.PI *x)/8));
+        }
+
+        var tangential = function(x,b){
+            return  gradient(b)*(x-b)+objective(b);
+        }
+
+        var makeGradStep = function(){
+            var g = gradient(a);
+            if(Math.abs(g)<2)
+                g = 3*g;
+            a = a - 0.3*g;
+        }
+
+        gradient_descent_plot_make_play = function(){
+            gradient_descent_plot_make_reset();
+            // TODO
+
+        }
+
+        gradient_descent_plot_make_reset = function(){
+
+            a = 0.2;
+            tmp_a = a;
+            update();
+            updateTangential();
+            svg.select("#projectionLine")
+                    .style("display","none");
+        }
+
+        gradient_descent_plot_make_step = function(el,callback){
+            $(el).prop('disabled', true);
+            svg.select("#projectionLine")
+                    .style("display",null)
+                    .attr("x1",  x(a))                           
+                    .attr("y1",  0)
+                    .attr("x2",  x(a))                           
+                    .attr("y2",  height)
+            makeGradStep();
+            // make circle red
+            svg.select("#focusdot").attr("class",null).attr("fill","red");
+            svg.select("#gradLine").attr("class","helper").attr("stroke","red");
+
+            // move circle along tangential
+            svg.select("#focusdot")
+            .transition()
+            .duration(2000)
+            .each(slide)
+            
+            .each("end", function(){
+                // projection step
+                tmp_a = a;
+                svg.select("#focusdot")
+                .transition()
+                .duration(2000)
+                .attr("cx",  x(a))                           
+                    .attr("cy",  y(objective(a)))
+                    .each("end", function(){
+                    updateTangential(a);
+                    svg.select("#focusdot").attr("class","classA").attr("fill",null);
+                    svg.select("#gradLine").attr("class","helper lineA").attr("stroke",null);
+                    $(el).prop('disabled', false);
+                    svg.select("#projectionLine")
+                    .attr("x1",  x(a))                           
+                    .attr("y1",  0)
+                    .attr("x2",  x(a))                           
+                    .attr("y2",  height)
+                    if( callback != null ){ callback(); };
+                });  
+            });
+        }
+
+        function slide() {
+                svg.select("#focusdot")
+                .transition()
+                .duration(2000)
+                    .attr("cx",  x(a))                           
+                    .attr("cy",  y(tangential(a,tmp_a))) 
+
+                svg.select("#projectionLine")
+                .transition()
+                .duration(2000)
+                    .attr("x1",  x(a))                           
+                    .attr("y1",  0)
+                .duration(2000)
+                    .attr("x2",  x(a))                           
+                    .attr("y2",  height)
+        }
+
+
+        var data = [];
+        for (var i = -15; i < 15; i+=0.5) {
+            data.push({x:i,y:objective(i)});
+        };
+
+        // Set the dimensions of the canvas / graph
+        var margin = {
+            top: 30,
+            right: 20,
+            bottom: 30,
+            left: 50
+        },
+            width = 600 - margin.left - margin.right,
+            height = 270 - margin.top - margin.bottom;
+
+        
+        var a = 0.2;
+        var tmp_a = a;
+
+        // Set the ranges
+        var x = d3.scale.linear().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+
+        // Define the axes
+        var xAxis = d3.svg.axis().scale(x)
+            .orient("bottom").ticks(5);
+
+        var yAxis = d3.svg.axis().scale(y)
+            .orient("left").ticks(5);
+
+        // Define the line
+        var objectiveLine = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+                return y(objective(d.x));
+            });
+
+        var gradientLine = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+                //g(x) = f'(a)(x-a) + f(a).
+                return y( gradient(a)*(d.x-a)+objective(a));
+            });
+
+        // Adds the svg canvas
+        var svg = d3.select("#gradient-descent-plot")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+
+        // Scale the range of the data
+        x.domain(d3.extent(data, function(d) {
+            return d.x;
+        }));
+        y.domain(d3.extent(data, function(d) {
+            return d.y;
+        }));
+
+
+        svg.append("path")
+            .attr("class", "simple")
+            .attr("id", "regline")
+            .attr("d", objectiveLine(data));
+
+        svg.append("text").attr("x",x(14)).attr("y",y(objective(14)+10)).text("f(x)");
+
+
+        svg.append("path")
+            .attr("class", "helper lineA")
+            .attr("fill","green")
+            .attr("id", "gradLine")
+            .attr("d", gradientLine(data));
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        // Add the Y Axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+        var cursor = svg.append("circle");
+        cursor
+              .attr("id", "focusdot")
+              .attr("class","classA")
+                .attr("r", 3.5)
+                .attr("cx",x(a))
+                .attr("cy",y(objective(a)));
+
+        svg.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height - 6)
+            .text("x");
+
+        svg.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "end")
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text("y=f(x)");
+
+        // append the rectangle to capture mouse  
+        svg.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .style("fill", "none")
+            .style("pointer-events", "all")
+
+        svg.append("line")
+            .attr("id","projectionLine")
+            .style("display","none")
+            .attr("class","helper")
+            .attr("stroke","red")
+            .attr("x1",x(5))
+            .attr("y1",y(objective(5)))
+            .attr("x2",x(7))
+            .attr("y2",y(objective(7)))
+
+
+        function updateTangential(b){
+            svg.select("#gradLine").attr("d",gradientLine(data)) ;  
+            svg.select("#gradtext")
+            .attr("x",x(b)+10)
+            .attr("y",y(objective(b))+10)
+        }
+        function update(){
+            svg.select("#focusdot")
+            .attr("cx",  x(a))                           
+            .attr("cy",  y(objective(a)));  
+
+            
+        } 
+
+
+
+    })();
+</script>

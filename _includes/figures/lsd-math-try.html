@@ -124,7 +124,7 @@ function resetfield(el,v){
           .attr("cy", function(d) { return y(d.y); });
 
         svg.append("path")
-            .attr("class", "line helper")
+            .attr("class", "line helper grayLine")
             .attr("id", "regline")
             .attr("d", valueLinReg(data));
 

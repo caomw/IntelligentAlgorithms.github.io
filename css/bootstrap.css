@@ -5811,10 +5811,11 @@ body > blockquote {
 .dot {
   stroke: #000;
 }
-
+.grayLine {
+  stroke: #666;
+}
 
 path { 
-    stroke: steelblue;
     stroke-width: 2;
     fill: none;
 }
@@ -5837,7 +5838,9 @@ svg{
   display: block; 
   margin: auto;
 }
-.helper{stroke:#666;stroke-dasharray:3,3;}
+.simple{stroke:#666;stroke-width: 1;
+    }
+.helper{stroke-dasharray:3,3;}
 
 code,pre{font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; 
 font-size: 11px !important; 
@@ -5850,7 +5853,12 @@ color:#4a4543;} /*#01a252*/
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
   border-radius: 7px;
-  padding:5px;}
+  padding:5px;
+border: 1px solid #DED8BF;
+  background-color: #f4f4d9;
+  width: 700px;
+  height: 400px;
+  cursor: pointer;}
 .figure > .caption{
   font-family: 'trebuchet ms', Verdana;
   font-style: italic; 
@@ -5863,3 +5871,29 @@ color:#4a4543;} /*#01a252*/
 }
 
 .figure:after{clear:right;}
+
+#pretty3d path{
+  stroke: #000;
+  stroke-width: 1px;
+  stroke: rgba(0,0,0,0.2);
+}
+
+.animation button {
+cursor: pointer;
+position: absolute;
+padding: 5px 10px;
+border-radius: 5px;
+border: solid 1px #ccc;
+color: #333;
+background: #fff;
+bottom: 20px;
+left: 20px;
+}
+
+input[type=button]:disabled,
+button:disabled {
+    cursor: default;
+    opacity: 0.35 !important;
+    filter: alpha(opacity=35);
+
+}

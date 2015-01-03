@@ -1,0 +1,170 @@
+
+<div class="figure">
+<svg id="gradient-deepest-plot"></svg>
+<div class="caption">Move the mouse over the graph to see the direction of the gradient</div>
+</div>
+<script>
+
+
+    (function(global) {
+
+        var objective = function(x){
+            return Math.cos(x/15*Math.PI)*60+Math.cos(x/8*Math.PI)*40;
+        }
+        var gradient = function(x){
+
+            return -Math.PI *(4 *Math.sin((Math.PI *x)/15)+5 *Math.sin((Math.PI *x)/8));
+        }
+
+
+        var data = [];
+        for (var i = -15; i < 15; i+=0.5) {
+            data.push({x:i,y:objective(i)});
+        };
+
+        // Set the dimensions of the canvas / graph
+        var margin = {
+            top: 30,
+            right: 20,
+            bottom: 30,
+            left: 50
+        },
+            width = 600 - margin.left - margin.right,
+            height = 270 - margin.top - margin.bottom;
+
+        
+        var a = 5;
+
+        // Set the ranges
+        var x = d3.scale.linear().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+
+        // Define the axes
+        var xAxis = d3.svg.axis().scale(x)
+            .orient("bottom").ticks(5);
+
+        var yAxis = d3.svg.axis().scale(y)
+            .orient("left").ticks(5);
+
+        // Define the line
+        var objectiveLine = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+                return y(objective(d.x));
+            });
+
+        var gradientLine = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+                //g(x) = f'(a)(x-a) + f(a).
+                return y( gradient(a)*(d.x-a)+objective(a));
+            });
+
+        // Adds the svg canvas
+        var svg = d3.select("#gradient-deepest-plot")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+
+        // Scale the range of the data
+        x.domain(d3.extent(data, function(d) {
+            return d.x;
+        }));
+        y.domain(d3.extent(data, function(d) {
+            return d.y;
+        }));
+
+
+        svg.append("path")
+            .attr("class", "simple")
+            .attr("id", "regline")
+            .attr("d", objectiveLine(data));
+
+        svg.append("text").attr("x",x(14)).attr("y",y(objective(14)+10)).text("f(x)");
+        svg.append("text")
+        .attr("id","gradtext")
+        .attr("x",x(a)+10)
+        //.attr("transform", "rotate("+Math.round(Math.atan(gradient(a))*180/Math.PI)+")")
+        .attr("y",y(objective(a)+10))
+        .attr("class","classA")
+        .text("linear approx.");
+
+
+        svg.append("path")
+            .attr("class", "helper lineA")
+            .attr("id", "gradLine")
+            .attr("d", gradientLine(data));
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        // Add the Y Axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+        var cursor = svg.append("circle");
+        cursor.attr("class","classA")
+              .attr("id", "focusdot")
+                .attr("r", 3.5)
+                .attr("cx",x(a))
+                .attr("cy",y(objective(a)));
+
+        svg.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height - 6)
+            .text("x");
+
+        svg.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "end")
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text("y=f(x)");
+
+        // append the rectangle to capture mouse  
+        svg.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .style("fill", "none")
+            .style("pointer-events", "all")
+            .on("mousemove", mousemove)
+            .on("mouseout", function(){
+                a=5;
+                update();
+            });
+
+        function update(){
+            svg.select("#focusdot")
+            .attr("cx",  x(a))                           
+            .attr("cy",  y(objective(a)));  
+
+            svg.select("#gradLine").attr("d",gradientLine(data)) ;  
+            svg.select("#gradtext")
+            .attr("x",x(a)+10)
+            .attr("y",y(objective(a))+10)
+        } 
+        function mousemove() {                                
+            a = x.invert(d3.mouse(this)[0]); 
+            update();   
+              
+        }  
+
+
+
+
+    })();
+</script>
