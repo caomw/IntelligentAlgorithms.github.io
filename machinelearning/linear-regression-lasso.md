@@ -98,4 +98,16 @@ holds, where we denote $$\hat{g}=g(x\vert \hat{\beta}(y))$$ and $$k$$ the number
 
 $$2k-2\log \left( L(\hat{\beta}\vert \mathcal{D}) \right).$$
 
-To now chose the a good model from a set of models we use the ACI values for each model
+To now chose the a good model from a set of models $$\{\mathfrak{M}_1,\mathfrak{M}_2,\ldots,\mathfrak{M}_\ell,\}$$ we use the ACI values for each model $$aic_i$$ and compute the relative $$\Delta aic_i=aic_i-aic_{\min}$$. The weights
+
+$$
+w_j = \frac{\exp\left( -\frac{aic_j}{2} \right)}{\exp\left( \sum_{k=1}^\ell  -\frac{aic_k}{2} \right)}
+$$
+
+indicates the amount of information-loss. Small $$w_i$$ implies much loss of information. Comparing two modells can be done by the relative relation 
+
+$$
+\frac{w_a}{w_b} = \frac{L(\beta_a)}{L(\beta_b)}
+$$
+
+Using this criterion we can choose the possible next parameter that will minimize the loss function.
