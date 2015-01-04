@@ -7,6 +7,12 @@ title: Intelligent Algorithms
 Intelligent Algorithms
 ==========
 
+<a href="https://github.com/IntelligentAlgorithms/"><img src="https://img.shields.io/badge/hosted-github-brightgreen.svg"></a>
+<a href="https://d3js.org"><img src="https://img.shields.io/badge/illustrations-d3js-brightgreen.svg"></a>
+<a href="http://martz90.deviantart.com/"><img src="https://img.shields.io/badge/favicon-martz90-brightgreen.svg"></a>
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/license-Creative Commons BY--NC--SA 4.0-blue.svg"></a>
+
+
 What are intelligent algorithms? How do they work? Or even what should we understand in *machine learning*. The buzzword *big data* is well known. This should be a small project writing about basic regression, SVM, neural networks, reinforcement learning, MCTS in game AI.
 
 Motivation
