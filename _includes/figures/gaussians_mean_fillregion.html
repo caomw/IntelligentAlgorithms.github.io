@@ -1,0 +1,221 @@
+
+
+<div class="figure">
+<svg id="gaussian_mean_fillregion_plot"></svg>
+<div class="caption">Move the mouse over the area to query different points or fill everything</div>
+
+<input type="button" onclick="gaussian_mean_fillregion_plot_fill()" value="fill">
+<input type="button" onclick="gaussian_mean_fillregion_plot_clear()" value="clear">
+</div>
+
+
+
+<script>
+
+var gaussian_mean_fillregion_plot_fill = function(){};
+var gaussian_mean_fillregion_plot_clear = function(){};
+(function(global) {
+ "use strict";
+var mu_1 = 0;
+var mu_2 = 3;
+var sigma = 0.5;
+
+
+var width  = 620,
+    height = 320;
+
+var xValue = function(d) { return d.x;},               // data -> value
+    xScale = d3.scale.linear().range([0, width]),      // value -> display
+    xMap   = function(d) { return xScale(xValue(d));}, // data -> display
+    xAxis  = d3.svg.axis().scale(xScale).orient("bottom");
+
+var yValue = function(d) { return d.y;},               // data -> value
+    yScale = d3.scale.linear().range([height, 0]),     // value -> display
+    yMap   = function(d) { return yScale(yValue(d));}, // data -> display
+    yAxis  = d3.svg.axis().scale(yScale).orient("left");
+
+var data = [];
+var filldata = [];
+var meancharPlot;
+var centroids = [{x:0,y:0},{x:0,y:0}];
+
+var unkown = [{x:1,y:1}];
+
+for (var i = 0; i < 50; i++) {
+
+    var el_0 = {
+            x : normalDistr(mu_1,sigma), 
+            y : normalDistr(mu_1,sigma), 
+            label: 0};
+    var el_1 = {
+            x : normalDistr(mu_2,sigma), 
+            y : normalDistr(mu_2,sigma), 
+            label: 1};
+
+    var LineDrawer;
+
+    centroids[0].x += el_0.x;
+    centroids[0].y += el_0.y;
+    centroids[1].x += el_1.x;
+    centroids[1].y += el_1.y;
+
+
+        data.push(el_0);
+        data.push(el_1);
+    };
+
+    centroids[0].x /= 50;
+    centroids[0].y /= 50;
+    centroids[1].x /= 50;
+    centroids[1].y /= 50;
+
+
+    xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+    yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+
+    meancharPlot = d3.select("#gaussian_mean_fillregion_plot")
+        .attr("width", width)
+        .attr("height", height);
+
+    // draw data points
+    meancharPlot.selectAll(".dot")
+          .data(data)
+          .enter()
+          .append("circle")
+          .attr("class", function(d){
+            if(d.label == 1)
+                return "classA";
+            return "classB";
+          })
+          .attr("r", 3.5)
+          .attr("cx", xMap)
+          .attr("cy", yMap);
+
+    // draw centroids points
+    meancharPlot.selectAll(".dot")
+          .data(centroids)
+          .enter()
+          .append("circle")
+          .attr("class", "classC")
+          .attr("r", 6.5)
+          .attr("cx", xMap)
+          .attr("cy", yMap);
+
+    // draw unkown
+    meancharPlot.selectAll(".dot")
+          .data(unkown)
+          .enter().append("circle")
+          .attr("class","unkown")
+          .attr("r", 4.5)
+          .attr("cx", xScale(unkown[0].x))
+          .style("stroke-width", 3)
+          .style('stroke','gray')
+          .attr("cy", yScale(unkown[0].y));
+
+    var filler = function(){
+      for (var i = d3.min(data, xValue)-1; i < d3.max(data, xValue)+1; i+=0.1) {
+        for (var j = d3.min(data, yValue)-1; j < d3.max(data, yValue)+1; j+=0.1) {
+          var pt = [xScale(i),yScale(j)];
+          var dist_a = (pt[0]-xMap(centroids[0]))*(pt[0]-xMap(centroids[0])) + (pt[1]-yMap(centroids[0]))*(pt[1]-yMap(centroids[0]));
+            var dist_b = (pt[0]-xMap(centroids[1]))*(pt[0]-xMap(centroids[1])) + (pt[1]-yMap(centroids[1]))*(pt[1]-yMap(centroids[1]));
+          var c_label =1;
+             if(dist_a < dist_b){
+              c_label=0;
+            }
+            var c_x = xScale.invert(pt[0]).round(1);
+            var c_y = yScale.invert(pt[1]).round(1);
+
+            var element = {x:c_x,y:c_y,l:c_label};
+
+            var comparer =  function(e) { 
+                return e.x === element.x && e.y === element.y; 
+            };
+
+            if (!filldata.inArray(comparer)) {
+                filldata.push(element);
+                meancharPlot.append("circle")
+            .attr("cx",xScale(c_x))
+            .attr("cy",yScale(c_y))
+            .attr("class",function(){
+              if(c_label ==1)
+                return "classA bgpt";
+              else
+                return "classB bgpt";
+            })
+            .attr("r", 1)
+
+            }
+        };
+      };
+    }
+    gaussian_mean_fillregion_plot_fill = filler;
+    gaussian_mean_fillregion_plot_clear = function(){
+      meancharPlot.selectAll(".bgpt").remove();
+      filldata = [];
+    }
+
+
+
+    // make dynamic      
+    meancharPlot
+    .on("mousemove", function() { 
+        var pt = d3.mouse(this); 
+
+        
+
+        meancharPlot
+        .selectAll(".unkown")
+        .data(unkown)
+        .attr("cx", pt[0])
+        .attr("cy", pt[1])
+        .style("stroke",function(d){
+
+            var dist_a = (pt[0]-xMap(centroids[0]))*(pt[0]-xMap(centroids[0])) + (pt[1]-yMap(centroids[0]))*(pt[1]-yMap(centroids[0]));
+            var dist_b = (pt[0]-xMap(centroids[1]))*(pt[0]-xMap(centroids[1])) + (pt[1]-yMap(centroids[1]))*(pt[1]-yMap(centroids[1]));
+            var c_label =1;
+             if(dist_a < dist_b){
+              c_label=0;
+            }
+
+            var c_x = xScale.invert(pt[0]).round(1);
+            var c_y = yScale.invert(pt[1]).round(1);
+
+            var element = {x:c_x,y:c_y,l:c_label};
+
+            var comparer =  function(e) { 
+                return e.x === element.x && e.y === element.y; 
+            };
+
+            if (!filldata.inArray(comparer)) {
+                filldata.push(element);
+                meancharPlot.append("circle")
+            .attr("cx",xScale(c_x))
+            .attr("cy",yScale(c_y))
+            .attr("class",function(){
+              if(c_label ==1)
+                return "classA bgpt";
+              else
+                return "classB bgpt";
+            })
+            .attr("r", 1)
+
+            }
+
+            
+
+            
+
+            console.log(c_x);
+
+           
+        });
+
+    });
+
+    
+
+
+
+})();
+
+</script>

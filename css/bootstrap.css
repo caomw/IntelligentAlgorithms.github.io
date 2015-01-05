@@ -5854,8 +5854,8 @@ color:#4a4543;} /*#01a252*/
   -moz-border-radius: 7px;
   border-radius: 7px;
   padding:5px;
-border: 1px solid #DED8BF;
-  background-color: #f4f4d9;
+ /*border: 1px solid #DED8BF;
+  background-color: #f4f4d9;*/
   width: 700px;
   height: 400px;
   cursor: pointer;}
