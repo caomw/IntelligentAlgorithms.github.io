@@ -444,22 +444,23 @@ h1,
 h2,
 .h2 {
   font-size: 34px;
+  text-align: center !important;
 }
 h3,
 .h3 {
-  font-size: 27px;
+  font-size: 24px;
 }
 h4,
 .h4 {
-  font-size: 20px;
+  font-size: 28px;
 }
 h5,
 .h5 {
-  font-size: 16px;
+  font-size: 14px;
 }
 h6,
 .h6 {
-  font-size: 14px;
+  font-size: 12px;
 }
 p {
   margin: 0 0 11px;
@@ -5803,6 +5804,22 @@ body > blockquote {
 .lineC {
   stroke: #33a02c;
 }
+
+.classD {
+  fill: #d21883;
+}
+.lineD {
+  stroke: #d21883;
+}
+
+.classE {
+  fill: #660b8c;
+}
+.lineE {
+  stroke: #660b8c;
+}
+
+
 .unkown{
   stroke: #666;
   fill:#ccc;
@@ -5842,10 +5859,7 @@ svg{
     }
 .helper{stroke-dasharray:3,3;}
 
-code,pre{font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; 
-font-size: 11px !important; 
-line-height: 12px !important; 
-color:#4a4543;} /*#01a252*/
+
 
 .figure{
   /*border:1px solid #ccc;*/ 
@@ -5897,3 +5911,24 @@ button:disabled {
     filter: alpha(opacity=35);
 
 }
+
+pre {
+margin: 1em 0;
+padding: 1em;
+background-color: #f4f4f4;
+line-height: 1.3em;
+border: 1px dashed rgba(0,0,0,0.1);
+border-left: 2px solid rgba(0,0,0,0.1);
+border-radius: 0 8px 8px 0;
+font-family: "Menlo", 'Ubuntu Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono',monospace;
+}
+code {
+font-family: "Menlo", 'Ubuntu Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono',monospace;
+font-size: 16px;
+background-color: #f4f4f4;
+border-bottom: 1px dashed #ddd;
+margin: 0 .1em;
+padding: .15em .3em;
+white-space: nowrap;
+}
+

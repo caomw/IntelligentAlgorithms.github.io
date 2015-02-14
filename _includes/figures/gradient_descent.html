@@ -18,9 +18,11 @@ var gradient_descent_plot_make_play = function(){};
     (function(global) {
 
         var objective = function(x){
+            return 1.98+  1.34*x-2.35*x*x+  0.908*x*x*x-0.1249*x*x*x*x+  0.0056*x*x*x*x*x;
             return Math.cos(x/15*Math.PI)*60+Math.cos(x/8*Math.PI)*40;
         }
         var gradient = function(x){
+            return 1.34-2*2.35*x+  3*0.908*x*x-4*0.1249*x*x*x+  5*0.0056*x*x*x*x;
             return -Math.PI *(4 *Math.sin((Math.PI *x)/15)+5 *Math.sin((Math.PI *x)/8));
         }
 
@@ -112,7 +114,8 @@ var gradient_descent_plot_make_play = function(){};
 
 
         var data = [];
-        for (var i = -15; i < 15; i+=0.5) {
+        //for (var i = -15; i < 15; i+=0.5) {
+        for (var i = 0; i < 10.4; i+=0.2) {
             data.push({x:i,y:objective(i)});
         };
 
@@ -127,7 +130,7 @@ var gradient_descent_plot_make_play = function(){};
             height = 270 - margin.top - margin.bottom;
 
         
-        var a = 0.2;
+        var a = 5.4;
         var tmp_a = a;
 
         // Set the ranges

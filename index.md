@@ -45,7 +45,7 @@ Hands on
 There exists several [public binary datasets][libsvm]. We focus on a dataset called *breast cancer* containing 683 entries from a [clinical study][breastcancerstudy] from 1989 having 9 recorded features for both classes:
 benign or malignant tumors. We will apply our first simple learning algorithm at this [dataset given as a csv file][breastcancercsv] in [Julia][julia]. The task is to use half of the data (342 entries) with kown tumor label (benign, malignant) to predict from the given features if a recorded tumor in the other half is malignant or not.
 
-<pre>
+<pre  class="matlab">
 {% include listings/means_prediction.jl %}
 </pre>
 

@@ -1,6 +1,6 @@
 
 <div class="figure">
-<svg id="gradient-deepest-plot"></svg>
+<svg id="cubic-deepest-plot"></svg>
 <div class="caption">Move the mouse over the graph to see the direction of the gradient</div>
 </div>
 <script>
@@ -16,6 +16,14 @@
             return 1.34-2*2.35*x+  3*0.908*x*x-4*0.1249*x*x*x+  5*0.0056*x*x*x*x;
             return -Math.PI *(4 *Math.sin((Math.PI *x)/15)+5 *Math.sin((Math.PI *x)/8));
         }
+        var hessian = function(x){
+            return -2*2.35+  3*0.908*2*x - 4*0.1249*3*x*x+  5*0.0056*4*x*x*x;
+            return -Math.PI *(4 *Math.sin((Math.PI *x)/15)+5 *Math.sin((Math.PI *x)/8));
+        }
+        var four = function(x){
+            return   3*0.908*2 - 4*0.1249*3*2*x+  5*0.0056*4*3*x*x;
+            return -Math.PI *(4 *Math.sin((Math.PI *x)/15)+5 *Math.sin((Math.PI *x)/8));
+        }
 
 
         var data = [];
@@ -25,16 +33,16 @@
 
         // Set the dimensions of the canvas / graph
         var margin = {
-            top: 30,
+            top: 80,
             right: 20,
             bottom: 30,
             left: 50
         },
             width = 600 - margin.left - margin.right,
-            height = 270 - margin.top - margin.bottom;
+            height = 370 - margin.top - margin.bottom;
 
-        
-        var a = 5.4;
+        var defaultv = 5.3;
+        var a = defaultv;
 
         // Set the ranges
         var x = d3.scale.linear().range([0, width]);
@@ -55,18 +63,22 @@
             .y(function(d) {
                 return y(objective(d.x));
             });
+        
+        var approx = function(x,d){
+            var v = objective(a);
+            if(d>0)  v += gradient(a)*(x-a);
+            if(d>1)  v += 0.5*(x-a)*(x-a)*hessian(a);
+            if(d>2)  v += 0.166*(x-a)*(x-a)*(x-a)*four(a);
+            return v;
+        }
 
-        var gradientLine = d3.svg.line()
-            .x(function(d) {
-                return x(d.x);
-            })
-            .y(function(d) {
-                //g(x) = f'(a)(x-a) + f(a).
-                return y( gradient(a)*(d.x-a)+objective(a));
-            });
+        var constLine = d3.svg.line().x(function(d) {return x(d.x);}).y(function(d) {return y( approx(d.x,0));});
+        var gradLine = d3.svg.line().x(function(d) {return x(d.x);}).y(function(d) {return y( approx(d.x,1));});
+        var quadLine = d3.svg.line().x(function(d) {return x(d.x);}).y(function(d) {return y( approx(d.x,2));});
+        var cubicLine = d3.svg.line().x(function(d) {return x(d.x);}).y(function(d) {return y( approx(d.x,3));});
 
         // Adds the svg canvas
-        var svg = d3.select("#gradient-deepest-plot")
+        var svg = d3.select("#cubic-deepest-plot")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -89,19 +101,70 @@
             .attr("d", objectiveLine(data));
 
         svg.append("text").attr("x",x(14)).attr("y",y(objective(14)+10)).text("f(x)");
+        
+        svg.append("text")
+        .attr("id","consttext")
+        .attr("x",x(a)+10)
+        .attr("y",y(objective(a)+10))
+        .attr("class","classD")
+        .text("const approx.");
+        
         svg.append("text")
         .attr("id","gradtext")
         .attr("x",x(a)+10)
-        //.attr("transform", "rotate("+Math.round(Math.atan(gradient(a))*180/Math.PI)+")")
+        .attr("y",y(objective(a)+10))
+        .attr("class","classC")
+        .text("linear approx.");
+        
+        svg.append("text")
+        .attr("id","quadtext")
+        .attr("x",x(a)+10)
+        .attr("y",y(objective(a)+10))
+        .attr("class","classB")
+        .text("quadr. approx.");
+        
+        svg.append("text")
+        .attr("id","cubictext")
+        .attr("x",x(a)+10)
         .attr("y",y(objective(a)+10))
         .attr("class","classA")
-        .text("linear approx.");
-
+        .text("cubic approx.");
 
         svg.append("path")
-            .attr("class", "helper lineA")
+            .attr("class", "helper lineD")
+            .attr("id", "constLine")
+            .attr("d", constLine(data));
+        
+        svg.append("path")
+            .attr("class", "helper lineC")
             .attr("id", "gradLine")
-            .attr("d", gradientLine(data));
+            .attr("d", gradLine(data));
+
+        svg.append("path")
+            .attr("class", "helper lineB")
+            .attr("id", "quadLine")
+            .attr("d", quadLine(data));
+        
+        svg.append("path")
+            .attr("class", "helper lineA")
+            .attr("id", "cubicLine")
+            .attr("d", cubicLine(data));
+        
+        svg.select("#consttext")
+            .attr("x",x(8))
+            .attr("y",y(approx(8,0)))
+            
+            svg.select("#gradtext")
+            .attr("x",x(8))
+            .attr("y",y(approx(8,1)))
+            
+            svg.select("#quadtext")
+            .attr("x",x(8))
+            .attr("y",y(approx(8,2)))
+            
+            svg.select("#cubictext")
+            .attr("x",x(8))
+            .attr("y",y(approx(8,3)))
 
         // Add the X Axis
         svg.append("g")
@@ -144,7 +207,7 @@
             .style("pointer-events", "all")
             .on("mousemove", mousemove)
             .on("mouseout", function(){
-                a=5;
+                a=defaultv;
                 update();
             });
 
@@ -153,10 +216,27 @@
             .attr("cx",  x(a))                           
             .attr("cy",  y(objective(a)));  
 
-            svg.select("#gradLine").attr("d",gradientLine(data)) ;  
+            svg.select("#constLine").attr("d",constLine(data)) ; 
+            svg.select("#gradLine").attr("d",gradLine(data)) ; 
+            svg.select("#quadLine").attr("d",quadLine(data)) ; 
+            svg.select("#cubicLine").attr("d",cubicLine(data)) ; 
+            
+            
+            svg.select("#consttext")
+            .attr("x",x(8))
+            .attr("y",y(approx(8,0)))
+            
             svg.select("#gradtext")
-            .attr("x",x(a)+10)
-            .attr("y",y(objective(a))+10)
+            .attr("x",x(8))
+            .attr("y",y(approx(8,1)))
+            
+            svg.select("#quadtext")
+            .attr("x",x(8))
+            .attr("y",y(approx(8,2)))
+            
+            svg.select("#cubictext")
+            .attr("x",x(8))
+            .attr("y",y(approx(8,3)))
         } 
         function mousemove() {                                
             a = x.invert(d3.mouse(this)[0]); 

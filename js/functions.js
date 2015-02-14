@@ -57,6 +57,39 @@ function resetfield(el,v){
     $(el).val(v);
 }
 
+function bisection(objective, value, intervall){
+    // tries to find objective(x) = value in intervall
+    var left = intervall[0];
+    var right = intervall[1];
+    
+    if(objective(intervall[0])>objective(intervall[1])){
+       var t =left;
+       left = right;
+       right = t;
+    }
+       
+
+    
+    var debug = (intervall[0]==5.8);
+    debug=false;
+    
+    var middle = 0.5*(right+left);
+    
+    for(var i=0;i<50;i++){
+        if(debug) console.log("middle "+middle+" "+objective(middle));
+        if(debug) console.log("left "+left+" "+objective(left));
+        if(debug) console.log("right "+right+" "+objective(right));
+        if(objective(middle) < value){
+           left = middle; 
+        }else{
+           right = middle;
+        }
+        middle = 0.5*(right+left);
+            
+    }
+    return middle;
+}
+
 var count = 0,
       overshoot = 300;
 function whenBoundsVisible(computeBounds, callback) {

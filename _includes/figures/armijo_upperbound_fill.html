@@ -1,7 +1,6 @@
 
 <div class="figure">
-<svg id="gradient-deepest-plot"></svg>
-<div class="caption">Move the mouse over the graph to see the direction of the gradient</div>
+<svg id="armijo-upperbound-plot"></svg>
 </div>
 <script>
 
@@ -10,11 +9,12 @@
         // 1.98x^0+  1.34x^1-2.35x^2+  0.908x^3-0.1249x^4+  0.0056x^5
         var objective = function(x){
             return 1.98+  1.34*x-2.35*x*x+  0.908*x*x*x-0.1249*x*x*x*x+  0.0056*x*x*x*x*x;
-            return Math.cos(x/15*Math.PI)*60+Math.cos(x/8*Math.PI)*40;
         }
         var gradient = function(x){
             return 1.34-2*2.35*x+  3*0.908*x*x-4*0.1249*x*x*x+  5*0.0056*x*x*x*x;
-            return -Math.PI *(4 *Math.sin((Math.PI *x)/15)+5 *Math.sin((Math.PI *x)/8));
+        }
+        var upperbound = function(x,alpha){
+            return objective(x) + 0.1*alpha*gradient(x)*(-gradient(x));
         }
 
 
@@ -22,6 +22,12 @@
         for (var i = 0; i < 10.4; i+=0.2) {
             data.push({x:i,y:objective(i)});
         };
+        
+        var alpha = 8;
+        
+        var upper = [];
+        upper.push({x:0.5,y:upperbound(0.5,0)});
+        upper.push({x:12,y:upperbound(0.5,12)});
 
         // Set the dimensions of the canvas / graph
         var margin = {
@@ -34,7 +40,7 @@
             height = 270 - margin.top - margin.bottom;
 
         
-        var a = 5.4;
+        var a = 0.5;
 
         // Set the ranges
         var x = d3.scale.linear().range([0, width]);
@@ -56,23 +62,13 @@
                 return y(objective(d.x));
             });
 
-        var gradientLine = d3.svg.line()
-            .x(function(d) {
-                return x(d.x);
-            })
-            .y(function(d) {
-                //g(x) = f'(a)(x-a) + f(a).
-                return y( gradient(a)*(d.x-a)+objective(a));
-            });
-
         // Adds the svg canvas
-        var svg = d3.select("#gradient-deepest-plot")
+        var svg = d3.select("#armijo-upperbound-plot")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
-
 
         // Scale the range of the data
         x.domain(d3.extent(data, function(d) {
@@ -81,28 +77,56 @@
         y.domain(d3.extent(data, function(d) {
             return d.y;
         }));
+        
 
-
+        
         svg.append("path")
-            .attr("class", "simple")
-            .attr("id", "regline")
-            .attr("d", objectiveLine(data));
+        .datum(upper)
+         .attr("id", "area_above")
+        .attr("class", "area")
+        .style("fill","lightsteelblue")
+        .attr("d", area2);
+
+
+
+
 
         svg.append("text").attr("x",x(14)).attr("y",y(objective(14)+10)).text("f(x)");
-        svg.append("text")
-        .attr("id","gradtext")
-        .attr("x",x(a)+10)
-        //.attr("transform", "rotate("+Math.round(Math.atan(gradient(a))*180/Math.PI)+")")
-        .attr("y",y(objective(a)+10))
-        .attr("class","classA")
-        .text("linear approx.");
 
-
+        var area = d3.svg.area()
+            .x(function(d) {  return x(d.x); })
+            .y0(height)
+            .y1(function(d) { return y(d.y); });
+        
+        var area2 = d3.svg.area()
+            .x(function(d) {  return x(d.x); })
+            .y0(-3)
+            .y1(function(d) { return y(d.y); });
+        
         svg.append("path")
-            .attr("class", "helper lineA")
-            .attr("id", "gradLine")
-            .attr("d", gradientLine(data));
+        .datum(data)
+        .attr("class", "area")
+        .attr("id", "area_below")
+        .style("fill","white")
+        .attr("d", area);
+        
+                
+        LineDrawer = svg.append("line")
+          .attr("id","upperbound")
+          .attr("x1", x(upper[0].x))
+          .attr("y1", y(upper[0].y))
+          .attr("x2", x(upper[1].x))
+          .attr("y2", y(upper[1].y))
+          .attr("stroke-width", 2)
+          .attr("stroke", "black");
 
+        
+                svg.append("path")
+            .attr("class", "simple")
+            .attr("id", "objective")
+            .attr("d", objectiveLine(data));
+        
+        
         // Add the X Axis
         svg.append("g")
             .attr("class", "x axis")
@@ -144,22 +168,25 @@
             .style("pointer-events", "all")
             .on("mousemove", mousemove)
             .on("mouseout", function(){
-                a=5;
                 update();
             });
 
         function update(){
-            svg.select("#focusdot")
-            .attr("cx",  x(a))                           
-            .attr("cy",  y(objective(a)));  
-
-            svg.select("#gradLine").attr("d",gradientLine(data)) ;  
-            svg.select("#gradtext")
-            .attr("x",x(a)+10)
-            .attr("y",y(objective(a))+10)
+            svg.select("#upperbound").attr("y2", y(upper[1].y));
+            
+             svg.select("#area_above")
+            .datum(upper)
+            .attr("d", area);
+            
+            svg.select("#area_below")
+            .datum(data)
+            .attr("d", area2);
+        
+        
         } 
-        function mousemove() {                                
-            a = x.invert(d3.mouse(this)[0]); 
+        function mousemove() {           
+            console.log(y.invert(d3.mouse(this)[1]));
+            upper[1].y = y.invert(d3.mouse(this)[1]);
             update();   
               
         }  
