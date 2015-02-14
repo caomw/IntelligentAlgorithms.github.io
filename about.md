@@ -17,11 +17,10 @@ What are intelligent algorithms? How do they work? Or even what should we unders
 
 Motivation
 -----------
-This project is intended to recap the basics for myself and practise writing in english. My opinion abou understanding is that: If you not able to illustrate algorithms or methods you don't actually understand them. Impressed by the [beautiful illustrations of Mike Bostock][mike] I started to play around to animate some graph is to learn how to create such stunning *d3.js* figures for some of the topics in machine learning. D3.js seems to be like the next generation of TikZ in some way. You should definetely checkout the [beautiful works][mike] of Mike Bostock.
-This is a good opportunity for me to
+This project is intended to recap the basics for myself and practise writing in english. My opinion about understanding is: If you not able to illustrate algorithms or methods you don't actually understand them. Impressed by the [beautiful illustrations of Mike Bostock][mike] I started to play around and animate some graph. One goal is to learn how to create such stunning *d3.js* figures for some of the topics in machine learning. D3.js seems to be like the next generation of TikZ in some way. You should definitely checkout the [beautiful works][mike] of Mike Bostock.
+This is a good opportunity to
 
 - learn and practise D3.js
-- make the representation more beautiful with carefully chosen fonts and alignments
 - to recap all basic theory about machine learning
 - learn Julia as a new programming language
 
@@ -36,10 +35,10 @@ Planned Stuff
 
 At least some buzzwords from my todo-list
 
+- Quasi-Newton-Algorithms like BFGS, L-BFGS, L-BFGS-B
 - SVM, structSVM
-- RandomForrest
+- Random-Forrest
 - Nearest Neighbors
-- Newton descent and Quasi-Newton-Algorithms like BFGS
 - neural networks (and convolutional neural networks)
 - PCA, t-SNE
 - unsupervised algorithms: LDA, k-means, GMM

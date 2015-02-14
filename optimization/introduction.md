@@ -84,7 +84,7 @@ We see, that this algorithm converges in this example to a local minimum. Instea
 
 In this animation above $$\eta$$ was fixed to $$0.3$$.
 
-Newton descent descent
+Newton descent
 -------------------
 
 What about using a better approximation of $f$? The second order Taylor approximation is
@@ -126,7 +126,7 @@ $$
 v^TH^{-1}v = (H^{-1}v)^TH(H^{-1}v)>0
 $$
 
-And therefore, $\nabla_x f(x)^Td = -\nabla_x f(x)^TH(a)^{-1}\nabla_x f(a) < 0 $.
+And therefore, $\nabla_x f(x)^Td = -\nabla_x f(x)^TH(a)^{-1}\nabla_x f(a) < 0 $. Unfortunately computing the inverse of a matrix is mostly not possible and efficient. We will later see how to avoid computing the inverse of the Hessian or even more avoid to compute the Hessian itself.
 
 Steplength
 ------------
