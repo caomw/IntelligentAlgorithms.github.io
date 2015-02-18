@@ -1,0 +1,331 @@
+<div class="figure">
+    <svg id="armijo-curvature-plot"></svg>
+    <div class="caption">Move the mouse over the graph to test some steplength $\eta$</div>
+</div>
+<script>
+    (function(global) {
+        
+   
+        // 1.98x^0+  1.34x^1-2.35x^2+  0.908x^3-0.1249x^4+  0.0056x^5
+        var objective = function(x) {
+            return 1.98 + 1.34 * x - 2.35 * x * x + 0.908 * x * x * x - 0.1249 * x * x * x * x + 0.0056 * x * x * x * x * x;
+        }
+        var gradient = function(x) {
+            return 1.34 - 2 * 2.35 * x + 3 * 0.908 * x * x - 4 * 0.1249 * x * x * x + 5 * 0.0056 * x * x * x * x;
+        }
+        var upperbound = function(x, alpha) {
+            return objective(x) + 0.1 * alpha * gradient(x) * (-gradient(x));
+        }
+
+
+        var data = [];
+        for (var i = 0; i < 10.4; i += 0.2) {
+            data.push({
+                x: i,
+                y: objective(i)
+            });
+        };
+
+        var alpha = 8;
+
+        var upper = [];
+        upper.push({
+            x: 0.5,
+            y: upperbound(0.5, 0)
+        });
+        upper.push({
+            x: 12,
+            y: 0
+        });
+
+
+        // Set the dimensions of the canvas / graph
+        var margin = {
+            top: 30,
+            right: 20,
+            bottom: 30,
+            left: 50
+        },
+            width = 600 - margin.left - margin.right,
+            height = 270 - margin.top - margin.bottom;
+
+        var curv_inter_x_000 = 0.5;
+        var a = curv_inter_x_000;
+
+        var testPoint = 1;
+
+        // Set the ranges
+        var x = d3.scale.linear().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+
+        // Define the axes
+        var xAxis = d3.svg.axis().scale(x)
+            .orient("bottom").ticks(5);
+
+        var yAxis = d3.svg.axis().scale(y)
+            .orient("left").ticks(5);
+
+        // Define the line
+        var objectiveLine = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+                return y(objective(d.x));
+            });
+        var gradientLine = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+                return y(gradient(testPoint) * (d.x - testPoint) + objective(testPoint));
+            });
+        var accLine001 = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+                return y(d.y);
+            });
+
+        // Adds the svg canvas
+        var svg = d3.select("#armijo-curvature-plot")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // Scale the range of the data
+        x.domain(d3.extent(data, function(d) {
+            return d.x;
+        }));
+        y.domain(d3.extent(data, function(d) {
+            return d.y;
+        }));
+
+        svg.append("text").attr("x", x(14)).attr("y", y(objective(14) + 10)).text("f(x)");
+
+
+        var difference = function(x) {
+            return objective(x) - upper[0].y - (upper[1].y - upper[0].y) / (upper[1].x - upper[0].x) * x;
+        }
+        curv_inter_x_001 = bisection(difference, 0, [3, 6]);
+        curv_inter_x_002 = bisection(difference, 0, [5.8, 8]);
+        curv_inter_x_003 = bisection(difference, 0, [9, 11]);
+
+
+
+        var intersec001 = svg.append("circle");
+        intersec001.attr("class", "classA")
+            .attr("id", "intersec001")
+            .attr("r", 3.5)
+            .attr("cx", x(curv_inter_x_001))
+            .attr("cy", y(objective(curv_inter_x_001)));
+        var intersec002 = svg.append("circle");
+        intersec002.attr("class", "classA")
+            .attr("id", "intersec002")
+            .attr("r", 3.5)
+            .attr("cx", x(curv_inter_x_002))
+            .attr("cy", y(objective(curv_inter_x_002)));
+        var intersec003 = svg.append("circle");
+        intersec003.attr("class", "classA")
+            .attr("id", "intersec003")
+            .attr("r", 3.5)
+            .attr("cx", x(curv_inter_x_003))
+            .attr("cy", y(objective(curv_inter_x_003)));
+
+        var acceptable001 = [];
+        var acceptable002 = [];
+
+        acceptable001.push({
+            x: curv_inter_x_000,
+            y: objective(curv_inter_x_000)
+        });
+        acceptable002.push({
+            x: curv_inter_x_002,
+            y: objective(curv_inter_x_002)
+        });
+
+        for (var i = 0; i < 10.4; i += 0.2) {
+            if ((i > curv_inter_x_000) && (i < curv_inter_x_001))
+                acceptable001.push({
+                    x: i,
+                    y: objective(i)
+                });
+            if ((i > curv_inter_x_002) && (i < curv_inter_x_003))
+                acceptable002.push({
+                    x: i,
+                    y: objective(i)
+                });
+        };
+        acceptable001.push({
+            x: curv_inter_x_001,
+            y: objective(curv_inter_x_001)
+        });
+        acceptable002.push({
+            x: curv_inter_x_003,
+            y: objective(curv_inter_x_003)
+        });
+
+        var area = d3.svg.area()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y0(height)
+            .y1(function(d) {
+                return y(d.y);
+            });
+
+        svg.append("path")
+            .datum(acceptable001)
+            .attr("id", "area_below01")
+            .attr("class", "area")
+            .style("opacity", "0.5")
+            .style("fill", "lightsteelblue")
+            .attr("d", area);
+
+        svg.append("path")
+            .datum(acceptable002)
+            .attr("id", "area_below02")
+            .attr("class", "area")
+            .style("opacity", "0.5")
+            .style("fill", "lightsteelblue")
+            .attr("d", area);
+
+        var acceptLine001 = svg.append("path")
+            .attr("class", "lineA")
+            .attr("id", "acceptable001")
+            .attr("d", accLine001(acceptable001));
+        var acceptLine002 = svg.append("path")
+            .attr("class", "lineA")
+            .attr("id", "acceptable002")
+            .attr("d", accLine001(acceptable002));
+
+        LineDrawer = svg.append("line")
+            .attr("id", "upperbound")
+            .attr("x1", x(upper[0].x))
+            .attr("y1", y(upper[0].y))
+            .attr("x2", x(upper[1].x))
+            .attr("y2", y(upper[1].y))
+            .attr("stroke-width", 1)
+            .attr("stroke", "black");
+
+
+        svg.append("path")
+            .attr("class", "simple")
+            .attr("id", "objective")
+            .attr("d", objectiveLine(data));
+
+        var testCircle = svg.append("circle");
+        testCircle.attr("class", "classC")
+            .attr("id", "intersec001")
+            .attr("r", 3.5)
+            .attr("cx", x(testPoint))
+            .attr("cy", y(objective(testPoint)));
+
+        var tangente = [];
+        for (var i = testPoint - 2; i < testPoint + 2; i += 0.2) {
+            tangente.push({
+                x: i,
+            });
+        }
+
+        var tang = svg.append("path")
+            .attr("class", "lineC")
+            .attr("id", "tangente")
+            .style("stroke-dasharray", "5,5")
+            .attr("d", gradientLine(tangente));
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        // Add the Y Axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+        var cursor = svg.append("circle");
+        cursor.attr("class", "classA")
+            .attr("id", "focusdot")
+            .attr("r", 3.5)
+            .attr("cx", x(a))
+            .attr("cy", y(objective(a)));
+
+        svg.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height - 6)
+            .text("x");
+
+        svg.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "end")
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text("y=f(x)");
+
+        // append the rectangle to capture mouse  
+        svg.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .style("fill", "none")
+            .style("pointer-events", "all")
+            .on("mousemove", mousemove)
+            .on("mouseout", function() {
+                update();
+            });
+
+        function update() {
+
+            testCircle.attr("cx", x(testPoint)).attr("cy", y(objective(testPoint)));
+
+            var tangente = [];
+
+            for (var i = testPoint - 2; i < testPoint + 2; i += 0.2) {
+                tangente.push({
+                    x: i,
+                });
+            }
+            tang.attr("d", gradientLine(tangente));
+
+
+            if (((testPoint > curv_inter_x_001) && (testPoint < curv_inter_x_002)) || (testPoint < curv_inter_x_000) || (testPoint > curv_inter_x_003)) {
+                tang.style("stroke", "red");
+                testCircle.style("fill", "red");
+            } else {
+                if (gradient(testPoint) < 0.9 * gradient(0.5)) {
+                    tang.style("stroke", "red");
+                    testCircle.style("fill", "red");
+                } else {
+
+                    tang.style("stroke", null);
+                    testCircle.style("fill", null);
+
+                }
+            }
+
+
+
+
+
+
+
+        }
+
+        function mousemove() {
+            testPoint = x.invert(d3.mouse(this)[0]);
+            update();
+
+        }
+
+
+
+
+    })();
+</script>

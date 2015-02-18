@@ -5791,6 +5791,10 @@ body > blockquote {
   fill: #1f78b4;
 }
 .lineA{stroke:#1f78b4;}
+.strokeOk{stroke:#2c5f81;}
+.fillOk{fill:#2c5f81;}
+.strokeFail{stroke:#8b0000;}
+.fillFail{fill:#8b0000;}
 
 .classB {
   fill: #ff7f00;

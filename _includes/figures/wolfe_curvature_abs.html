@@ -1,6 +1,6 @@
 <div class="figure">
-    <svg id="armijo-curvature-plot"></svg>
-    <div class="caption">Move the mouse over the graph to adjust the slope $d$</div>
+    <svg id="armijo-curvature_abs-plot"></svg>
+    <div class="caption">Move the mouse over the graph to test some steplength $\eta$</div>
 </div>
 <script>
     (function(global) {
@@ -89,7 +89,7 @@
             });
 
         // Adds the svg canvas
-        var svg = d3.select("#armijo-curvature-plot")
+        var svg = d3.select("#armijo-curvature_abs-plot")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -113,6 +113,11 @@
         curv_inter_x_001 = bisection(difference, 0, [3, 6]);
         curv_inter_x_002 = bisection(difference, 0, [5.8, 8]);
         curv_inter_x_003 = bisection(difference, 0, [9, 11]);
+        
+        abs_inter_x_000 = 2.3154;
+        abs_inter_x_001 = 2.8452;
+        abs_inter_x_002 = 9.10490;
+        abs_inter_x_003 = 9.22264;
 
 
 
@@ -146,6 +151,18 @@
             x: curv_inter_x_002,
             y: objective(curv_inter_x_002)
         });
+        
+        var absacceptable001 = [];
+        var absacceptable002 = [];
+        
+        absacceptable001.push({
+            x: abs_inter_x_000,
+            y: 3//objective(abs_inter_x_000)
+        });
+        absacceptable002.push({
+            x: abs_inter_x_002,
+            y: 3//objective(abs_inter_x_002)
+        });
 
         for (var i = 0; i < 10.4; i += 0.2) {
             if ((i > curv_inter_x_000) && (i < curv_inter_x_001))
@@ -158,6 +175,19 @@
                     x: i,
                     y: objective(i)
                 });
+            
+            if ((i > abs_inter_x_000) && (i < abs_inter_x_001))
+                absacceptable001.push({
+                    x: i,
+                    y: 3 //objective(i)
+                });
+            if ((i > abs_inter_x_002) && (i < abs_inter_x_003))
+                absacceptable002.push({
+                    x: i,
+                    y: 3 //objective(i)
+                });
+            
+            
         };
         acceptable001.push({
             x: curv_inter_x_001,
@@ -166,6 +196,15 @@
         acceptable002.push({
             x: curv_inter_x_003,
             y: objective(curv_inter_x_003)
+        });
+        
+        absacceptable001.push({
+            x: abs_inter_x_001,
+            y: 3//objective(abs_inter_x_001)
+        });
+        absacceptable002.push({
+            x: abs_inter_x_003,
+            y: 3//objective(abs_inter_x_003)
         });
 
         var area = d3.svg.area()
@@ -191,6 +230,22 @@
             .attr("class", "area")
             .style("opacity", "0.5")
             .style("fill", "lightsteelblue")
+            .attr("d", area);
+        
+        svg.append("path")
+            .datum(absacceptable001)
+            .attr("id", "absarea_below01")
+            .attr("class", "area")
+            .style("opacity", "0.5")
+            .style("fill", "rgb(112, 220, 100)")
+            .attr("d", area);
+        
+        svg.append("path")
+            .datum(absacceptable002)
+            .attr("id", "absarea_below02")
+            .attr("class", "area")
+            .style("opacity", "0.5")
+            .style("fill", "rgb(112, 220, 100)")
             .attr("d", area);
 
         var acceptLine001 = svg.append("path")
@@ -299,7 +354,7 @@
                 tang.style("stroke", "red");
                 testCircle.style("fill", "red");
             } else {
-                if (gradient(testPoint) < 0.9 * gradient(0.5)) {
+                if (Math.abs(gradient(testPoint)) > 0.9 * Math.abs(gradient(0.5))) {
                     tang.style("stroke", "red");
                     testCircle.style("fill", "red");
                 } else {
