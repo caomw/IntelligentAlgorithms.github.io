@@ -7,41 +7,9 @@
 <script>
 
     var up = null;
-    
+    $(function() {
     (function(global) {
-        
-        var d3jsbinding = function(){
-            this.svg = [];
-            this.v = null;
-            
-            this.addBinding= function(el,prop,func){
-                this.svg.push({handle: el,property: prop, function: func});
-            }
-
-            this.setValue = function(x){  
-                this.v = x;
-
-                for(var i=0;i<this.svg.length;i++){
-                    
-   
-                    for(var j=0;j<this.svg[i].property.length;j++){
-                        if(typeof this.svg[i].function[j] === "undefined"){
-                            this.svg[i].handle.transition().duration(2000)
-                            .attr(this.svg[i].property[j],f);
-                        }else{
-                            this.svg[i].handle.transition().duration(2000)
-                            .attr(this.svg[i].property[j],this.svg[i].function(f));
-                        }
-                       
-                    }
-
-                }
-            };
-            
-            
-            this.value = function(){return this.v;}
-        }
-        
+         
         var objective = function(x){
             return 1.98+  1.34*x-2.35*x*x+  0.908*x*x*x-0.1249*x*x*x*x+  0.0056*x*x*x*x*x;
         }
@@ -63,7 +31,7 @@
         var alpha = 8; 
         var eta = 4.5;   // current stepwidth
         
-        var guess = new d3jsbinding();
+        var guess = new d3binding();
         
         up = function(){
             guess.setValue(6);
@@ -170,15 +138,7 @@
           .attr("x2", x(x0+eta))
           .attr("y2", y(objective(x0+eta)));
         
-        var parent = this;
-        guess.addBinding(vl,["x1","x2"],
-                         [function(v){return x(v);},
-                          function(v){return x(v);}
-                         ]
-                        );
-        //guess.addBinding(vl,"y1",function(v){return y(upperbound(v));});
-        //guess.addBinding(vl,"x2",function(v){return x(v);});
-        //guess.addBinding(vl,"y2",function(v){return y(objective(v));});
+         
         
         // draw initial position
         svg.append("circle").attr("class", "simple")
@@ -194,6 +154,10 @@
             .attr("r", 3.5)
             .attr("cx", x(x0+eta))
             .attr("cy", y(objective(x0+eta)));
+        
+        var etaBinding = new d3binding();
+            etaBinding.connect(stepwith_point, "cx", function(v) {return x(x0+v);});
+            etaBinding.connect(stepwith_point, "cy", function(v) {return y(objective(x0+v));});
         
         
         // append the rectangle to capture mouse  
@@ -213,7 +177,7 @@
         
         } 
         function mousemove() {           
-           
+           etaBinding.animate(1);
               
         }  
 
@@ -221,4 +185,5 @@
 
 
     })();
+        });
 </script>
