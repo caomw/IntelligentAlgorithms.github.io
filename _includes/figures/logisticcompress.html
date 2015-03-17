@@ -1,0 +1,190 @@
+<svg id="logisticcompress"></svg>
+<button onclick="logistic_sgd_step();" id="logisticcompress_learn">learn</button>
+<!--mu_1 <input type="text" id="logisticcompress_mu1" style="width:25px;">
+mu_2 <input type="text" id="logisticcompress_mu2" style="width:25px;">
+sigma <input type="text" id="logisticcompress_sigma" style="width:25px;">
+iteration <span id="iter">0</span>-->
+
+<script>
+var logistic_sgd_step = function(){};
+(function(global) {
+
+var mu_1 = 1;
+var mu_2 = 3;
+var sigma = 0.5;
+
+
+$("#logisticcompress_mu1").val(mu_1);
+$("#logisticcompress_mu2").val(mu_2);
+$("#logisticcompress_sigma").val(sigma);
+
+
+var width  = 620,
+    height = 320;
+
+var xScale2 = d3.scale.linear().range([0, width/2]);
+var yScale2 = d3.scale.linear().range([height, 0]);
+
+var xValue = function(d) { return d.x;},               // data -> value
+    xScale = d3.scale.linear().range([0, width/2]),      // value -> display
+    xMap   = function(d) { return xScale(xValue(d));}, // data -> display
+    //xMap2   = function(d) { return xScale2(xValue(d));}, // data -> display
+    xMap2  = function(d) { return xScale2(xValue(d))+width/2;}, // data -> display
+    xAxis  = d3.svg.axis().scale(xScale).orient("bottom");
+
+
+
+var yValue = function(d) { return d.y;},               // data -> value
+    yScale = d3.scale.linear().range([height, 0]),     // value -> display
+    yMap   = function(d) { return yScale(yValue(d));}, // data -> display
+    yMap2   =function(d) { return yScale2(yValue(d));}, // data -> display
+    yAxis  = d3.svg.axis().scale(yScale).orient("left");
+
+var data = [];
+var data2 = [];
+var meancharPlot;
+
+var beta = [0.0,0.0,0.0];
+
+var h = function(beta, x){
+  var exponent = -1*(beta[0]*x[0]+beta[1]*x[1]+beta[2]);
+  var p = 1.0+Math.exp(exponent);
+  return 1.0/p;
+}
+var iter = 0;
+var update_beta = function(){
+  $('logisticcompress_learn').prop('disabled', true);
+
+  var sum = [0,0,0];
+
+  for (var j = 0; j < 28; j++) {
+    for (var i = 0; i < data.length; i++) {
+      var vec = [data[i].x, data[i].y, 1];
+      var tmp = data[i].label - h(beta,vec);
+      sum[0] = sum[0] + tmp*vec[0];
+      sum[1] = sum[1] + tmp*vec[1];
+      sum[2] = sum[2] + tmp*vec[2];
+    };
+    var eta = 0.0001;
+
+    beta[0] = beta[0] + eta*sum[0];
+    beta[1] = beta[1] + eta*sum[1];
+    beta[2] = beta[2] + eta*sum[2];
+  };
+  
+  data2=[];
+  for (var i = 0; i < 50; i++) {
+    data2.push({
+        x : 0.5, 
+        y : h(beta,[data[i*2].x, data[i*2].y]), 
+        label: 0});
+    data2.push({
+        x : 0.5, 
+        y : h(beta,[data[i*2+1].x, data[i*2+1].y]), 
+        label: 1});
+  
+};
+
+
+  d3.select("#logisticcompress").selectAll(".dotter")
+          .data(data2)
+          .transition()
+          .duration(1200)
+          .attr("r", 3.5)
+          .attr("cx", xMap2)
+          .attr("cy", yMap2)
+          .each("end", function(){
+            $("#logisticcompress_iter").text(iter+" / 64");
+          });
+          iter++;
+
+
+///////////////////////////////
+if(iter<15){
+setInterval(function() {
+   update_beta();
+}
+           
+
+          
+        , 2500);
+///////////////////////////////
+}
+}
+logistic_sgd_step = update_beta;
+
+for (var i = 0; i < 50; i++) {
+    data.push({
+        x : normalDistr(mu_1,sigma), 
+        y : normalDistr(mu_1,sigma), 
+        label: 0});
+    data.push({
+        x : normalDistr(mu_2,sigma), 
+        y : normalDistr(mu_2,sigma), 
+        label: 1});
+};
+
+for (var i = 0; i < 50; i++) {
+  data2.push({
+        x : 0.5, 
+        y : h(beta,[data[i*2].x, data[i*2].y]), 
+        label: 0});
+  data2.push({
+        x : 0.5, 
+        y : h(beta,[data[i*2+1].x, data[i*2+1].y]), 
+        label: 1});
+};
+
+    xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+    xScale2.domain([1-1, 1+1]);
+    yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+    yScale2.domain([0, 1]);
+
+    var meancharPlot = d3.select("#logisticcompress")
+        .attr("width", width)
+        .attr("height", height);
+
+    meancharPlot.selectAll(".dot")
+          .data(data)
+          .enter()
+          .append("circle")
+          .attr("class", function(d){
+            if(d.label == 1)
+                return "classA";
+            return "classB";
+          })
+          .attr("r", 3.5)
+          .attr("cx", xMap)
+          .attr("cy", yMap);
+
+
+    meancharPlot.selectAll(".dotter")
+          .data(data2)
+          .enter()
+          .append("circle")
+          .attr("class", function(d){
+            if(d.label == 1)
+                return "classA dotter";
+            return "classB dotter";
+          })
+          .attr("r", 3.5)
+          .attr("cx", xMap2)
+          .attr("cy", yMap2);
+
+    meancharPlot.append("line")
+    .attr("class","lineC")
+    .attr("x1",xScale2(0)+width/2)
+    .attr("x2",xScale2(1)+width/2)
+    .attr("y1",yScale2(0.5))
+    .attr("y2",yScale2(0.5));
+
+    meancharPlot.append("text")
+    .attr("class","lineC")
+    .attr("x",xScale2(1.1)+width/2)
+    .attr("y",yScale2(0.5))
+    .text("p=0.5")
+
+
+})();
+
+</script>

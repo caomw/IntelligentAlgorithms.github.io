@@ -93,3 +93,9 @@ $$
 This helps to implement gradient descent with update rule
 
 $$\beta \gets \beta +\eta  \sum_{k=1}^n \left(y_k - h(x_k) \right) x_k $$
+
+Intrinsically logistic regression squeeze the data as illustrated in the following figure:
+
+{% include figures/logisticcompress.html %}
+
+You will see, that applying $h(x)$ for a appropriate $\beta$ will force the data point to move at the correct side of the intervall $$[0,1]$$. Then, we can classify each point with ease.
