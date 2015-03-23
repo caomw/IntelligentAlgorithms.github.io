@@ -2,8 +2,8 @@
 <button onclick="logistic_sgd_step();" id="logisticcompress_learn">learn</button>
 <!--mu_1 <input type="text" id="logisticcompress_mu1" style="width:25px;">
 mu_2 <input type="text" id="logisticcompress_mu2" style="width:25px;">
-sigma <input type="text" id="logisticcompress_sigma" style="width:25px;">
-iteration <span id="iter">0</span>-->
+sigma <input type="text" id="logisticcompress_sigma" style="width:25px;">-->
+iteration <span id="logisticcompress_iter">0</span>
 
 <script>
 var logistic_sgd_step = function(){};
@@ -52,12 +52,48 @@ var h = function(beta, x){
   return 1.0/p;
 }
 var iter = 0;
+
+var hndAnimation;
+
+var animation = function(){
+
+
+  hndAnimation = setInterval(step, 1500);
+
+}
+
+var step = function(){
+  update_beta();
+  updateDrawing();
+  iter++;
+  
+  //console.log(iter);
+  if(iter > 55){
+    clearInterval(hndAnimation);
+  }
+  $("#logisticcompress_iter").text(iter+"/"+55);
+}
+
+var updateDrawing = function(){
+   d3.select("#logisticcompress").selectAll(".dotter")
+        .data(data2)
+        .transition()
+        .duration(1200)
+        
+        .attr("r", 3.5)
+        .attr("cx", xMap2)
+        .attr("cy", yMap2)
+        //.each("end",animation);
+
+}
+
+
 var update_beta = function(){
   $('logisticcompress_learn').prop('disabled', true);
 
   var sum = [0,0,0];
 
-  for (var j = 0; j < 28; j++) {
+  for (var j = 0; j < 29; j++) {
     for (var i = 0; i < data.length; i++) {
       var vec = [data[i].x, data[i].y, 1];
       var tmp = data[i].label - h(beta,vec);
@@ -85,33 +121,9 @@ var update_beta = function(){
   
 };
 
-
-  d3.select("#logisticcompress").selectAll(".dotter")
-          .data(data2)
-          .transition()
-          .duration(1200)
-          .attr("r", 3.5)
-          .attr("cx", xMap2)
-          .attr("cy", yMap2)
-          .each("end", function(){
-            $("#logisticcompress_iter").text(iter+" / 64");
-          });
-          iter++;
-
-
-///////////////////////////////
-if(iter<15){
-setInterval(function() {
-   update_beta();
 }
-           
 
-          
-        , 2500);
-///////////////////////////////
-}
-}
-logistic_sgd_step = update_beta;
+logistic_sgd_step = animation;
 
 for (var i = 0; i < 50; i++) {
     data.push({
