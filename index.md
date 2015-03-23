@@ -49,7 +49,7 @@ benign or malignant tumors. We will apply our first simple learning algorithm at
 {% include listings/means_prediction.jl %}
 </pre>
 
-This gives an accuracy of 53%. While this is just slightly better than random guessing (chance of 50%) we will we see how to improve this performance using more sophisticated algorithms.
+This gives an accuracy of 53%. Which is much better than random guessing (chance of $0.5^{132}$) we will we see how to improve this performance using more sophisticated algorithms.
 
 Notation
 --------------

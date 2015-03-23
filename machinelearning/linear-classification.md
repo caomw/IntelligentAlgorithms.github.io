@@ -58,7 +58,7 @@ L(\beta) &= \prod_{k=1}^n (\beta^Tx_k)^{y_k}  (1-(\beta^Tx_k))^{1-{y_k}}
 \end{align*}
 $$
 
-Same game as before: we use maximize the log-Likelihood
+Same game as before: we maximize the log-Likelihood
 
 $$
 \begin{align*}
@@ -99,3 +99,14 @@ Intrinsically logistic regression squeeze the data as illustrated in the followi
 {% include figures/logisticcompress.html %}
 
 You will see, that applying $h(x)$ for a appropriate $\beta$ will force the data point to move at the correct side of the intervall $$[0,1]$$. Then, we can classify each point with ease.
+
+<h3>Application</h3>
+Let use again the dataset *breast cancer* containing 683 entries from a clinical study from 1989 having 9 recorded features for both classes. After normalization we should augment the data $$X$$ by adding a dimension with constant 1. [Doing so][juliabox_logregression] we can achieve an accuracy of 74%.
+
+<span class="gist">https://gist.githubusercontent.com/PatWie/035d4c45eb9eef06ebe5/raw</span>
+
+This is higher than our [first simple learning algorithm](/).
+
+
+[juliabox_logregression]:http://nbviewer.ipython.org/gist/PatWie/035d4c45eb9eef06ebe5
+

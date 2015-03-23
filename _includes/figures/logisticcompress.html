@@ -138,7 +138,7 @@ for (var i = 0; i < 50; i++) {
     xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
     xScale2.domain([1-1, 1+1]);
     yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
-    yScale2.domain([0, 1]);
+    yScale2.domain([-0.2, 1.2]);
 
     var meancharPlot = d3.select("#logisticcompress")
         .attr("width", width)
@@ -171,18 +171,25 @@ for (var i = 0; i < 50; i++) {
           .attr("cx", xMap2)
           .attr("cy", yMap2);
 
-    meancharPlot.append("line")
+
+
+    $.each([0, 0.5, 1], function( index, value ) {
+      meancharPlot.append("line")
     .attr("class","lineC")
     .attr("x1",xScale2(0)+width/2)
     .attr("x2",xScale2(1)+width/2)
-    .attr("y1",yScale2(0.5))
-    .attr("y2",yScale2(0.5));
+    .attr("y1",yScale2(value))
+    .attr("y2",yScale2(value));
 
     meancharPlot.append("text")
     .attr("class","lineC")
     .attr("x",xScale2(1.1)+width/2)
-    .attr("y",yScale2(0.5))
-    .text("p=0.5")
+    .attr("y",yScale2(value))
+    .text("h(x)="+value)
+
+    });
+
+ 
 
 
 })();

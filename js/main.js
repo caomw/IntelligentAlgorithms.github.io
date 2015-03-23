@@ -20,3 +20,50 @@ MathJax.Hub.Config({
 
 
 
+// function to display a gist
+
+function displayJuliaFile(){
+    $('.gist').each(function(i, obj) {
+        var url = obj.innerHTML;
+        obj.innerHTML = "";
+
+        $.getJSON( url, function( data ) {
+            //console.log(data);
+            
+            $.each(data.cells, function( index, value ) {
+                var input = $( "<pre class=\"matlab\">"+ value.source +"</pre>" );
+                
+                $(obj).append(input);
+
+                if(value.outputs.length > 0){
+
+                    if (typeof value.outputs[0].data != 'undefined') {
+                      if (typeof value.outputs[0].data["text/plain"] != 'undefined') {
+                      $(obj).append( "<pre class=\"output\">"+value.outputs[0].data["text/plain"]+"</pre>" ); 
+
+                    }
+                    }
+
+                    if (typeof value.outputs[0].text != 'undefined') {
+                      
+                      $(obj).append( "<pre class=\" output\">"+value.outputs[0].text+"</pre>" );    
+                    
+                    }
+
+        
+
+                    
+                }
+                
+            });
+        }).done(function() {
+            $("pre.matlab").each(function (i, e) {
+        //alert(e.innerHTML);
+        hljs.highlightBlock(e);
+    });
+          })
+    });
+    
+   
+    
+}

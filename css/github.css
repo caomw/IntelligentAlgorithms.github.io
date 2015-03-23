@@ -123,3 +123,8 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 .hljs-chunk {
   color: #aaa;
 }
+
+
+.output{background-color: rgb(219, 233, 242);
+  border: rgb(204, 204, 242) 1px solid;}
+.output:before{content:"Out:\A";color:#0000ff;}
