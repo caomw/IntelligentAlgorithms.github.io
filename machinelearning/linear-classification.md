@@ -105,7 +105,7 @@ Let use again the dataset *breast cancer* containing 683 entries from a clinical
 
 <span class="gist">https://gist.githubusercontent.com/PatWie/035d4c45eb9eef06ebe5/raw</span>
 
-This is higher than our [first simple learning algorithm](/).
+This accuracy is higher than our [first simple learning algorithm](/). In summary, even for non-linear objective function like the sigmoid function for modelling probabilities linear methods are very helpful. In the next section we will look into generalized linear models.
 
 
 [juliabox_logregression]:http://nbviewer.ipython.org/gist/PatWie/035d4c45eb9eef06ebe5
