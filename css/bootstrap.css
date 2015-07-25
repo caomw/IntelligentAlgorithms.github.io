@@ -272,7 +272,8 @@ body {
   font-size: 16px;
   line-height: 1.428571429;
   color: #333333;
-  background-color: #ffffff;
+  background: #404040;
+  background-image:url(texture.png);
 }
 input,
 button,
@@ -735,8 +736,7 @@ pre code {
 .container {
   margin-right: auto;
   margin-left: auto;
-  padding-left: 15px;
-  padding-right: 15px;
+
 }
 @media (min-width: 768px) {
   .container {
@@ -5771,16 +5771,23 @@ button.close {
     display: none !important;
   }
 }
-.container.content  {
-  line-height: 1.5em;
-  width: 720px !important;
-  margin-left: auto;
-  text-align: justify;
-}
+.content {margin: 1px auto -8px auto;
+    position: relative;
+    overflow: visible;
+    border: 9px solid transparent;
+    background-clip: content-box;
+    background-color: white;
+    border-image: url(shadow.png) 9 9 repeat;
+    }
+.contenttext{
 
-body > div.container.content > p {
-  margin: 1em 5% 2em auto;
-}
+
+  padding-left:5%;padding-right:15%;line-height: 1.5em;
+  margin-left: auto;
+  text-align: justify;margin: 1em 5% 2em auto;}
+
+
+
 
 body > blockquote {
   width: 640px;
