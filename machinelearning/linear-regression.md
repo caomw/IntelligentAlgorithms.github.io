@@ -6,16 +6,17 @@ title: Linear Regression
 Linear Regression
 ================
 
-In contrast to our previous classification problem we would like to predict the performance on math tests under influence of drugs. There was a study by Wagner, Agahajanian, and Bing  in 1968. A group of volunteers was given Lysergic Acid Diethylamide, their scores on math exam and tissue concentrations of LSD were obtained at several time points. The mark 
+In contrast to our previous classification problem we would like to predict the performance on math tests under influence of drugs. There was a study by Wagner, Agahajanian, and Bing in 1968. A group of volunteers was given Lysergic Acid Diethylamide (LSD), their scores on math exam and tissue concentrations of LSD were obtained at several time points. The result is given in this tiny dataset 
 
 	# lsd    score
-	  1.17   78.93
-	  2.97   58.20
-	  3.26   67.47
-	  4.69   37.47
-	  5.83   45.65
-	  6.00   32.92
-	  6.41   29.97
+	1.17     78.93
+	2.97     58.20
+	3.26     67.47
+	4.69     37.47
+	5.83     45.65
+	6.00     32.92
+	6.41     29.97
+
 
 What will be the mean math score given a tissue concentration of `5.2`? We can model this dependency between the tissue concentration and meth score in a linear way:
 
@@ -87,7 +88,7 @@ We only assume $$X^TX$$ to be invertible, i.e., each of the observed data is uni
 
 We can easily code this *ordinary least squares* using Julia
 
-<pre><code class="matlab">
-{% include listings/least_squares.jl %}
-</code></pre>
 
+<span class="gist">https://raw.githubusercontent.com/IntelligentAlgorithms/JuliaFiles/master/linearmethods/lcd.ipynb</span>
+
+Now compare these values of `beta` with your slope and offset in the interactive figure.

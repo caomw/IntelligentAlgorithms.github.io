@@ -23,33 +23,35 @@ The most simple learning algorithm
 
 Let's step back from sophisticated problems to a more simple problem, where you only have to decided whether the gray point belongs to the orange or blue points there are some cases where this seems easy:
 
+> While this example seems to be over-simplified, in real world application even classification is sometimes hard.
+
 {% include figures/gaussians.html %}
 
-So, even when the position of the colored points change, our intuition would predict a relationship between the gray and orange points. They are somehow similiar. In fact, they are nearby. Let $$x_1,x_2,\ldots,x_n$$ be $$n$$ vectors data points with labels $$y_1,y_2,\ldots,y_n$$ either beloging to the class of orange points, i.e., $$y_i=1$$ or to the blue points, hence $$y_i=0$$. We would like to predict a label $$y$$ of the gray data point $$x$$. The most easy way is to compute the mean value of each class
+So, even when the positions of the colored points change, our intuition would predict a relationship between the gray and blue points. They are somehow similiar. In fact, they are nearby. Let $$x_1,x_2,\ldots,x_n$$ be $$n$$ vectors representing our data points with associated labels $$y_1,y_2,\ldots,y_n$$ either beloging to the class of orange points, i.e., $$y_i=1$$ or to the blue points, hence $$y_i=0$$. We would like to predict a label $$\hat{y}$$ of the gray data point $$x$$. The most easy way is to evaluate the average position of each class
 
 $$\mu_0 = \frac{1}{\#\{i:y_i=0\}}\sum_{i:y_i=0}x_i,\qquad \mu_1 = \frac{1}{\#\{i:y_i=1\}}\sum_{i:y_i=1}x_i, $$
 
 we were simply add the vectors of each class and divide them by the cardinality of each class.
 And then to predict the label $$\hat{y}$$ of $$x$$, we just need to compute
 
-$$\hat{y} = \operatorname{argmin}_i\Vert \mu_i -x\Vert,$$
+$$\hat{y} = \operatorname{argmin}_i\Vert \mu_i -x\Vert_2,$$
 
-which will be 0 or 1 depending on if $$\mu_0$$ or $$\mu_1$$ is nearer to $$x$$. So the position of the gray point will influence the prediction of the sketched algorithm. If the gray point moves around we may be would label it as blue if it comes closer to the blue points. Now, simply move the mouse over the next plot and see how the prediction changes. The green big circles represent the average of each class.
+which will be 0 or 1 depending on if $$\mu_0$$ or $$\mu_1$$ is more close to $$x$$. So the position of the gray query point will influence the prediction of the sketched algorithm. If the gray point moves around, we would label it as blue if it comes closer to the blue points or orange if the query point comes closer to the average position of the orange class. Now, simply move the mouse over the next plot and see how the prediction changes. The big circles represent the average of each class.
 
 {% include figures/gaussians_mean_prediction.html %}
 
-Depending on which center is nearer. This simple algorithm will predict the label of the moving point. This is a very fundamental concept of most learning algorithms. To create prediction a good way is to calculate somehow the 'similarity' between the query input (the point we want to label automatically) and our datapoint where we already know from history the correct output.
+Depending on the euclidean distance between gray query point and each center, the predicted color changes. This is a very fundamental concept of most learning algorithms. To create prediction a good way is to calculate somehow the *similarity* between the query input (the point we want to label automatically) and our datapoint where we already know from history the correct output.
 
 Hands on
 --------------
 There exists several [public binary datasets][libsvm]. We focus on a dataset called *breast cancer* containing 683 entries from a [clinical study][breastcancerstudy] from 1989 having 9 recorded features for both classes:
-benign or malignant tumors. We will apply our first simple learning algorithm at this [dataset given as a csv file][breastcancercsv] in [Julia][julia]. The task is to use half of the data (342 entries) with kown tumor label (benign, malignant) to predict from the given features if a recorded tumor in the other half is malignant or not.
+benign or malignant tumors. This is a very use application: Given a set of properties, what the most probable classification?
 
-<pre  class="matlab">
-{% include listings/means_prediction.jl %}
-</pre>
+We will apply our first simple learning algorithm at this [dataset given as a csv file][breastcancercsv] in [Julia][julia]. The task is to use half of the data (342 entries) with kown tumor label (benign, malignant) to predict from the given features if a recorded tumor in the other half is malignant or not.
 
-This gives an accuracy of 53%. Which is much better than random guessing (chance of $0.5^{132}$) we will we see how to improve this performance using more sophisticated algorithms.
+<span class="gist">https://raw.githubusercontent.com/IntelligentAlgorithms/JuliaFiles/master/introduction/mostsimplealgorithm.ipynb</span>
+
+This gives an accuracy of 53%. Which is much better than random guessing (chance of $0.5^{132}$) we will we see how to improve this performance using more sophisticated algorithms. One drawback of this method is the weighting of each feature. A feature with a small range of value becomes overruled by feature of large value-ranges. As a conclusion we get another interesting point. Independently of the applied algorithm a proper pre-processing *always* helps.
 
 Notation
 --------------

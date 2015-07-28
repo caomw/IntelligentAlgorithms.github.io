@@ -26,44 +26,36 @@ function displayJuliaFile(){
     $('.gist').each(function(i, obj) {
         var url = obj.innerHTML;
         obj.innerHTML = "";
-
         $.getJSON( url, function( data ) {
-            //console.log(data);
-            
             $.each(data.cells, function( index, value ) {
-                var input = $( "<pre class=\"matlab\">"+ value.source +"</pre>" );
+                var input = "<pre class=\"matlab\">" ;
+                $.each(value.source, function(i,d){input = input + ""+ d +"" ;});
+                input = input + "</pre>";
                 
                 $(obj).append(input);
-
                 if(value.outputs.length > 0){
-
                     if (typeof value.outputs[0].data != 'undefined') {
                       if (typeof value.outputs[0].data["text/plain"] != 'undefined') {
-                      $(obj).append( "<pre class=\"output\">"+value.outputs[0].data["text/plain"]+"</pre>" ); 
-
+                        var input = "" ;
+                        $.each(value.outputs[0].data["text/plain"], function(i,d){input = input + ""+ d +"" ;});
+                          $(obj).append( "<pre class=\"output\">"+input+"</pre>" ); 
+                        }
                     }
-                    }
-
                     if (typeof value.outputs[0].text != 'undefined') {
-                      
-                      $(obj).append( "<pre class=\" output\">"+value.outputs[0].text+"</pre>" );    
-                    
-                    }
-
-        
-
-                    
+                        var input = "" ;
+                        $.each(value.outputs[0].text, function(i,d){input = input + ""+ d +"" ;});
+                      $(obj).append( "<pre class=\" output\">"+input+"</pre>" );     
+                    }   
                 }
                 
             });
         }).done(function() {
             $("pre.matlab").each(function (i, e) {
-        //alert(e.innerHTML);
-        hljs.highlightBlock(e);
-    });
+                //alert(e.innerHTML);
+                hljs.highlightBlock(e);
+            });
           })
     });
-    
    
     
 }

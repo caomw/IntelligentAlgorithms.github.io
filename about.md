@@ -13,22 +13,20 @@ Intelligent Algorithms
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/license-Creative Commons BY--NC--SA 4.0-blue.svg"></a>
 
 
-What are intelligent algorithms? How do they work? Or even what should we understand in *machine learning*. The buzzword *big data* is well known. This should be a small project writing about basic regression, SVM, neural networks, reinforcement learning, MCTS in game AI.
+What are intelligent algorithms? What is *machine learning*? The buzzword *big data* is ubiquitous. 
+This should be a small project writing about basic regression, SVM, neural networks, reinforcement learning, MCTS for AI in games.
 
-Motivation
------------
-This project is intended to recap the basics for myself and practise writing in english. My opinion about understanding is: If you not able to illustrate algorithms or methods you don't actually understand them. Impressed by the [beautiful illustrations of Mike Bostock][mike] I started to play around and animate some graph. One goal is to learn how to create such stunning *d3.js* figures for some of the topics in machine learning. D3.js seems to be like the next generation of TikZ in some way. You should definitely checkout the [beautiful works][mike] of Mike Bostock.
-This is a good opportunity to
+This little project is just to recap the basic, summarize methods and practise my english. Last but not least, it a good exercise for learning the Julia-language (which can be sometimes more tricky than JavaScript). It is a kind of challenge writing this stuff in JavaScript or small examples. Impressed by the [beautiful illustrations of Mike Bostock][mike] I started to play around and animate some graph. Sometimes it is time consuming writing this stuff. But in the end, if the figure works like I expected, I often get impressed how handy a web-browser can be.
 
-- learn and practise D3.js
-- to recap all basic theory about machine learning
-- learn Julia as a new programming language
+The slogan is: *If you not able to sketch illustrations of algorithms or methods you don't actually understand them!*
 
-At least this kind of presenting information has a huge advantage compared to traditional books. 
+D3.js seems to be like the next generation of TikZ in some way. You should definitely checkout the [beautiful works][mike] of Mike Bostock.
+This way of presenting information has a huge advantage compared to traditional books, namely:
 
-1. I can use all colors that can be represented by $$32^3$$ bytes.
-2. This way enabled to let the user interact with the illustration in contrast to just to look at them. Feel free to play around with them.
-3. Using `git` makes it easy to remove typing errors or other mistakes.
+1. I can use all colors that can be represented by $$32^3$$ bytes. No consideration of toner.
+2. Adding one additional phrase does not screw up a page limit, or prey on my conscience about the enviroment.
+3. Allowing user interaction at the figures motivates to play around with some values. So, feel free to play around with them.
+4. Using `git` makes it easy to remove typing errors or other mistakes.
 
 Planned Stuff
 --------------

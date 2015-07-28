@@ -398,7 +398,7 @@ h2,
 .h2,
 h3,
 .h3 {
-  margin-top: 22px;
+  margin-top: 80px;
   margin-bottom: 11px;
 }
 h1 small,
@@ -5782,7 +5782,8 @@ button.close {
 .contenttext{
 
 
-  padding-left:5%;padding-right:15%;line-height: 1.5em;
+  padding-left:15%; padding-right:20%; padding-top:5%;line-height: 1.5em;
+  padding-bottom:15%;
   margin-left: auto;
   text-align: justify;margin: 1em 5% 2em auto;}
 
@@ -5943,3 +5944,13 @@ padding: .15em .3em;
 white-space: nowrap;
 }
 
+
+blockquote {
+    font-size: small;
+    right: 0;
+    position: absolute;
+    width: 20%;
+    margin-top:-10px;
+    margin-left:-4%;
+    border:none;
+}

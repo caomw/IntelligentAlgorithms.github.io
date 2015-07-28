@@ -62,11 +62,16 @@ f(a+\eta d) &= f(a) + \eta d^T \nabla_x f(a) +\eta^2\mathcal{O}(1)
 \end{align*}
 $$
 
-holds. Making $$\eta$$ sufficient small, we can ignore $$\eta^2\mathcal{O}(1)$$. To find the direction $$d$$ with length $$\Vert d\Vert_2=1$$ which will decrease the objective value $$f(a+\eta d)$$ it is sufficient to minimize $$d^T \nabla_x f(a)$$. This implies
+holds. Making $$\eta$$ sufficient small, we can ignore $$\eta^2\mathcal{O}(1)$$. To find the direction $$d$$ with length $$\Vert d\Vert_2=1$$ which will decrease the objective value $$f(a+\eta d)$$ it is sufficient to minimize $$d^T \nabla_x f(a)$$. Now, from linear calculus we know 
 
-$$u=\frac{-\nabla_x f(a)}{\Vert \nabla_x f(a) \Vert}.$$
+$$d^T \nabla_x f(a) = \Vert d \Vert \cdot \Vert \nabla_x f(x)\Vert \cdot \cos(\theta)$$
 
-In other words $$-\nabla_x f(a)$$ is the direction of the deepest descent. The gradient $$\nabla f(\tilde{x})$$ in $$\tilde{x}$$ is always pointing to the next location with a smaller objective value. Why not follow this gradient?
+Since, our direction $d$ has unit length and $\Vert \nabla_x f(x)\Vert$ is constant, this expression minimize the cosine of the angle $\cos(\theta)$ between $d$ and $\nabla_x f(x) $. This implies $\cos(\theta)=-1$ and hence
+
+$$d=\frac{-\nabla_x f(a)}{\Vert \nabla_x f(a) \Vert}$$
+
+is the direction of deepest descent.
+The gradient $$\nabla f(\tilde{x})$$ in $$\tilde{x}$$ is always pointing to the next location with a bigger objective value. Why not follow the counter-direction of the gradient?
 
 1. start in $$x_0$$ and $$k \gets 0$$
 2. for $$k\gets 1,2,\ldots, N$$

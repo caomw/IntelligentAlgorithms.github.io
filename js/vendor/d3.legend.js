@@ -52,4 +52,4 @@ d3.legend = function(g) {
   })
   return g
 }
-})()
+})();

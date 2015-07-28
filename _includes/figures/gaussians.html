@@ -1,98 +1,93 @@
-<svg id="meanchart"></svg>
+<svg id="fig_dynamic_gaussians"></svg>
 
 <script>
 (function(global) {
-
-var mu_1 = 0;
-var mu_2 = 3;
-var sigma = 0.5;
-
-
+ "use strict";
 var width  = 620,
     height = 320;
 
-var xValue = function(d) { return d.x;},               // data -> value
-    xScale = d3.scale.linear().range([0, width]),      // value -> display
-    xMap   = function(d) { return xScale(xValue(d));}, // data -> display
-    xAxis  = d3.svg.axis().scale(xScale).orient("bottom");
+var hnd = d3.select("#fig_dynamic_gaussians");
+hnd.attr("width", width);
+hnd.attr("height", height);
 
-var yValue = function(d) { return d.y;},               // data -> value
-    yScale = d3.scale.linear().range([height, 0]),     // value -> display
-    yMap   = function(d) { return yScale(yValue(d));}, // data -> display
-    yAxis  = d3.svg.axis().scale(yScale).orient("left");
+var mu_1 = 0,mu_2 = 3,sigma = 0.5,num = 50;
+var dots = [];
 
-var data = [];
-var meancharPlot;
-
-function updateMeanchart(){
-    for (var i = 0; i < 50; i+=2) {
-        data[i] = {
-            x : normalDistr(mu_1,sigma), 
-            y : normalDistr(mu_1,sigma), 
-            label: 0};
-        data[i+1] = {
-            x : normalDistr(mu_2,sigma), 
-            y : normalDistr(mu_2,sigma), 
-            label: 1};
+// init all dots
+function init(){
+  dots = [];
+  for (var i = 0; i < num; i++) {
+    var dot ={
+      mu: mu_1,
+      sigma: sigma,
+      x: normalDistr(mu_1,sigma),
+      y: normalDistr(mu_1,sigma),
+      label: 1
     };
+    dots.push(dot);
+  }
+  for (var i = 0; i < num; i++) {
+    var dot ={
+      mu: mu_2,
+      sigma: sigma,
+      x: normalDistr(mu_2,sigma),
+      y: normalDistr(mu_2,sigma),
+      label: 2
+    };
+    dots.push(dot);
+  }
+  dots.push({x: 1,y: 1,label: 3});
+};
+init();
 
 
-    meancharPlot.selectAll("circle").data(data)
-        .transition()
-        .duration(1200)
+var xScale = d3.scale.linear().range([0, width]);
+var yScale = d3.scale.linear().range([height, 0]);
+var xMap   = function(d) { return xScale(d.x);}
+var yMap   = function(d) { return yScale(d.y);}
+
+xScale.domain([-3, 6]);
+yScale.domain([-3, 6]);
+
+function draw(){
+     hnd.selectAll(".dot")
+        .data(dots)
+        .enter()
+        .append("circle")
+        .attr("class", function(d){
+          if(d.label == 1)
+            return "classA";
+          if(d.label == 2)
+            return "classB";
+          return "unkown";
+        })
+        .attr("r", 3.5)
         .attr("cx", xMap)
         .attr("cy", yMap);
 }
+draw();
 
 
+function update(){
+  for (var i = 0; i < num*2; i++) {
+    dots[i].x = normalDistr(dots[i].mu,dots[i].sigma);
+    dots[i].y = normalDistr(dots[i].mu,dots[i].sigma);
+  }
 
-for (var i = 0; i < 50; i++) {
-        data.push({
-            x : normalDistr(mu_1,sigma), 
-            y : normalDistr(mu_1,sigma), 
-            label: 0});
-        data.push({
-            x : normalDistr(mu_2,sigma), 
-            y : normalDistr(mu_2,sigma), 
-            label: 1});
-    };
+  hnd.selectAll("circle").data(dots)
+         .transition()
+         .duration(1200)
+         .attr("cx", xMap)
+         .attr("cy", yMap);
 
-    xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
-    yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
-
-    meancharPlot = d3.select("#meanchart")
-        .attr("width", width)
-        .attr("height", height);
-
-    meancharPlot.selectAll(".dot")
-          .data(data)
-          .enter()
-          .append("circle")
-          .attr("class", function(d){
-            if(d.label == 1)
-                return "classA";
-            return "classB";
-          })
-          .attr("r", 3.5)
-          .attr("cx", xMap)
-          .attr("cy", yMap);
-
-    var unkown = [{x:1,y:1}];
-
-    meancharPlot.selectAll(".dot")
-          .data(unkown)
-          .enter().append("circle")
-          .attr("class","unkown")
-          .attr("r", 3.5)
-          .attr("cx", xScale(unkown[0].x))
-          .style("stroke-width", 3)
-          .style('stroke','gray')
-          .attr("cy", yScale(unkown[0].y));
+}
 
 setInterval(function() {
-  updateMeanchart();
+ update();
 }, 1500);
 
+
 })();
+
 
 </script>

@@ -127,6 +127,4 @@ Hence, $$X^TX+ \lambda 1$$ is positive definite for $$\lambda>0$$ and invertible
 
 To compute the parameters in Julia just use
 
-<pre>
-{% include listings/least_squares_ridge.jl %}
-</pre>
+<span class="gist">https://raw.githubusercontent.com/IntelligentAlgorithms/JuliaFiles/master/linearmethods/lcd-ridge.ipynb</span>
