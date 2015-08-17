@@ -1,151 +1,129 @@
 <div class="figure">
-
-<svg id="linreg-prob-plot"></svg>
-<div class="caption">Each data point is drawn from the underlying linear model plus some noise.</div>
-
-<span class="buttons">
-sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
-<input type="button" onclick="resetfield('#linreg-prob-sigma',10);resetfield('#beta_linreg',50);" value="reset">
-</span>
-
-
+  <svg id="fig_linreg_prob"></svg>
+  <div class="caption">Each data point is drawn from the underlying linear model plus some noise.</div>
+  <span class="buttons">
+  sigma^2 <input type="text" id="linreg-prob-sigma" value="10">
+  <input type="button" onclick="resetfield('#linreg-prob-sigma',10);resetfield('#beta_linreg',50);" value="reset">
+  </span>
 </div>
 
 <script>
+(function(global) {
+  // Set the dimensions of the canvas / graph
+  var margin = {top: 30, right: 20, bottom: 30, left: 50 },
+  width = 600 - margin.left - margin.right,
+  height = 270 - margin.top - margin.bottom;
 
+  // Set the ranges
+  var x = d3.scale.linear().range([0, width]);
+  var y = d3.scale.linear().range([height, 0]);
 
-    (function(global) {
+  // Adds the svg canvas
+  var svg = d3.select("#fig_linreg_prob")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
 
-        var sigma = $("#linreg-prob-sigma").val();
+  var points = {
+    data : [],
+    num: 50,
+    sigma : 1,
 
-        var data = [];
-        for (var i = 0; i < 50; i++) {
-            var el_x = i;
-            var el_y = 3*i+2 + normalDistr(0,sigma);
-            var el = {x:el_x, y:el_y}
-            data.push(el);
-        };
-        // Set the dimensions of the canvas / graph
-        var margin = {
-            top: 30,
-            right: 20,
-            bottom: 30,
-            left: 50
-        },
-            width = 600 - margin.left - margin.right,
-            height = 270 - margin.top - margin.bottom;
+    model: function(x){
+      return 3*x+2 + normalDistr(0,this.sigma);
+    },
+    update: function(){
+      this.sigma = $("#linreg-prob-sigma").val();
+      this.data  = [];
+      for (var i = this.num; i >= 0; i--) {
+        this.data.push({x: i, y: this.model(i)});
+      };
+    },
+    refresh : function(svg){
+      svg.selectAll("circle")
+       .data(this.data)
+       .transition()
+       .duration(1200)
+       .attr("cx", function(d) { return x(d.x); })
+       .attr("cy", function(d) { return y(d.y); });
+    }
+  };
 
+  points.update();
+  // Add the valueline path.
+  svg.selectAll('.data-point')
+    .data(points.data)
+    .enter()
+    .append("circle")
+    .attr("class","classA")
+    .attr("r", 3.5)
+    .attr("cx", function(d) { return x(d.x); })
+    .attr("cy", function(d) { return y(d.y); });
+  points.refresh(svg);
 
-        // Set the ranges
-        var x = d3.scale.linear().range([0, width]);
-        var y = d3.scale.linear().range([height, 0]);
+  // Define the axes
+  var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
+  var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
 
-        // Define the axes
-        var xAxis = d3.svg.axis().scale(x)
-            .orient("bottom").ticks(5);
+  // Define the line
+  var valueLinReg = d3.svg.line()
+    .x(function(d) {
+    return x(d.x);
+  })
+    .y(function(d) {
+    return y( 3*d.x+2);
+  });
 
-        var yAxis = d3.svg.axis().scale(y)
-            .orient("left").ticks(5);
+  // Scale the range of the data
+  x.domain(d3.extent(points.data, function(d) {return d.x;}));
+  y.domain(d3.extent(points.data, function(d) {return d.y;}));
 
-        // Define the line
-        var valueLinReg = d3.svg.line()
-            .x(function(d) {
-                return x(d.x);
-            })
-            .y(function(d) {
-                return y( 3*d.x+2);
-            });
+  function update(){
+    points.update();
+    points.refresh(svg);
+  }
 
-        // Adds the svg canvas
-        var svg = d3.select("#linreg-prob-plot")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+  // Add the valueline path.
+  points.refresh(svg);
+  var line = svg.append("path")
+    .attr("class", "line helper grayLine")
+    .attr("id", "regline")
+    .attr("d", valueLinReg(points.data));
 
+  // add both axes
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
 
-        // Scale the range of the data
-        x.domain(d3.extent(data, function(d) {
-            return d.x;
-        }));
-        y.domain(d3.extent(data, function(d) {
-            return d.y;
-        }));
+  svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height - 6)
+    .text("x");
 
-        function update(){
-            sigma = $("#linreg-prob-sigma").val();
-            data = [];
-            for (var i = 0; i < 50; i++) {
-                var el_x = i;
-                var el_y = 3*i+2 + normalDistr(0,sigma);
-                var el = {x:el_x, y:el_y}
-                data.push(el);
-            };
-            svg.selectAll("circle").data(data)
-                .transition()
-                .duration(1200)
-                .attr("cx", function(d) { return x(d.x); })
-                .attr("cy", function(d) { return y(d.y); });
+  svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("y");
 
-        }
+  var refreshIntervalId = null;
 
-        // Add the valueline path.
-        svg.selectAll('.data-point')
-
-          .data(data)
-          .enter()
-          .append("circle")
-          .attr("class","classA")
-          .attr("r", 3.5)
-          .attr("cx", function(d) { return x(d.x); })
-
-          .attr("cy", function(d) { return y(d.y); });
-
-        var line = svg.append("path")
-            .attr("class", "line helper grayLine")
-            .attr("id", "regline")
-            .attr("d", valueLinReg(data));
-
-        // Add the X Axis
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
-
-        // Add the Y Axis
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
-
-        svg.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("x", width)
-            .attr("y", height - 6)
-            .text("x");
-        svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "end")
-            .attr("y", 6)
-            .attr("dy", ".75em")
-            .attr("transform", "rotate(-90)")
-            .text("y");
-
-        var refreshIntervalId = null;
-
-        whenFullyVisible(line.node(), function(){
-            refreshIntervalId = setInterval(function() {
-
-            whenFullyVisible(line.node(),function(){
-                update();
-            });
-
-          
-        }, 1500);
-        });
-
-        
-
-    })();
-</script>
+  whenFullyVisible(line.node(), function(){
+    refreshIntervalId = setInterval(function() {
+      whenFullyVisible(line.node(),function(){
+        update();
+      });
+    }, 1500);
+  });
+})();
+</script>   

@@ -9,3 +9,4 @@ cat js/vendor/d3.v3.min.js js/vendor/jquery.min.js js/functions.min.js js/highli
 uglifycss css/bootstrap.css > css/bootstrap.min.css
 uglifycss css/github.css > css/github.min.css
 cat css/bootstrap.min.css css/github.min.css > css/css.min.css
+

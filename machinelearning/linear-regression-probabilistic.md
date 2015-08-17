@@ -6,14 +6,14 @@ title: Linear Regression a probabilistic interpretation
 Linear Regression 
 ================
 
-from a probabilistic view
+from a probabilistic pespective
 ---------------------------
 
-But why should we use the sum of quadratic residuals? Therefore, let us model a probabilistic view to this problem. We assume that the target value $$y_i$$ depends in a linear way on the input value $$x_i$$ and some noise:
+But why should we use the sum of quadratic residuals? Another way to solve a regression problem is to use model a probabilistic pespective to this problem. We assume that each target value $$y_i$$ depends in a linear way on the input value $$x_i$$ and some noise:
 
 $$y_i=\beta^Tx_i + \varepsilon$$
 
-We assume $$\varepsilon\sim \mathcal{N}(0,\sigma^2)$$ to be a Gaussian with variance $$\sigma^2$$. Since, $$\beta^Tx_i+0$$ is a constant, the data generator for $$y$$ is a Gaussian with mean $$\beta^Tx_i+0$$ and variance $$\sigma^2>0$$. The following figure illustrates data drawn from a linear model with adjustable $$\sigma$$.
+We assume $$\varepsilon\sim \mathcal{N}(0,\sigma^2)$$ to be a Gaussian with variance $$\sigma^2$$. Since, $$\beta^Tx_i$$ is a constant, the data generator for $$y$$ is a Gaussian with mean $$\beta^Tx_i+0$$ and variance $$\sigma^2>0$$. The following figure illustrates data drawn from a linear model with adjustable $$\sigma$$.
 
 {% include figures/linreg-prob.html %}
 

@@ -101,12 +101,10 @@ Intrinsically logistic regression squeeze the data as illustrated in the followi
 You will see, that applying $h(x)$ for a appropriate $\beta$ will force the data point to move at the correct side of the intervall $$[0,1]$$. Then, we can classify each point with ease.
 
 <h3>Application</h3>
-Let use again the dataset *breast cancer* containing 683 entries from a clinical study from 1989 having 9 recorded features for both classes. After normalization we should augment the data $$X$$ by adding a dimension with constant 1. [Doing so][juliabox_logregression] we can achieve an accuracy of 74%.
+Let use again the dataset *breast cancer* containing 683 entries from a clinical study from 1989 having 9 recorded features for both classes. After normalization we should augment the data $$X$$ by adding a dimension with constant 1. Doing so we can achieve an accuracy of 74%.
 
-<span class="gist">https://gist.githubusercontent.com/PatWie/035d4c45eb9eef06ebe5/raw</span>
+<span class="gist">https://raw.githubusercontent.com/IntelligentAlgorithms/JuliaFiles/master/linearmethods/logistic_regression.ipynb</span>
 
 This accuracy is higher than our [first simple learning algorithm](/). In summary, even for non-linear objective function like the sigmoid function for modelling probabilities linear methods are very helpful. In the next section we will look into generalized linear models.
 
-
-[juliabox_logregression]:http://nbviewer.ipython.org/gist/PatWie/035d4c45eb9eef06ebe5
 

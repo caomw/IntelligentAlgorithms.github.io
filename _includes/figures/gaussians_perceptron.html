@@ -1,0 +1,192 @@
+<div class="figure">
+  <svg id="fig_gaussians_perceptron"></svg>
+  <div class="caption">Each false classified point will cause a update to the current weight beta. Click on *step* to run one iteration.</div>
+  <span class="buttons">
+  <input id="fig_gaussians_perceptron_new" type="button" onclick="" value="random points">
+  <input id="fig_gaussians_perceptron_step" type="button" onclick="" value="step">
+  </span>
+</div>
+
+<script>
+  (function(global) {
+   "use strict";
+
+  var width  = 620,
+      height = 320;
+
+  var hnd = d3.select("#fig_gaussians_perceptron");
+  hnd.attr("width", width);
+  hnd.attr("height", height);
+
+  var mu_1 = 0,mu_2 = 4,sigma = 1,num = 30;
+  var dots = [];
+  var groups = [];
+  groups.push({dots:[], center:{x:0, y:0, label:1}});
+  groups.push({dots:[], center:{x:0, y:0, label:2}});
+
+  var unkown = {x:2, y:1};
+
+  var xScale = d3.scale.linear().range([0, width]);
+  var yScale = d3.scale.linear().range([height, 0]);
+
+  xScale.domain([-4, 7]);
+  yScale.domain([-4, 7]);
+
+  // random data
+  var example = {
+    dots: [],
+    groups : [],
+    num: 20,
+    init: function(){
+      this.dots = [];
+      this.groups.push({dots:[], center:{x:0, y:0, label:1}});
+      this.groups.push({dots:[], center:{x:0, y:0, label:2}});
+      
+      for (var i = 0; i < this.num; i++) {
+        var dot ={
+          mu: mu_1,
+          sigma: sigma,
+          x: normalDistr(mu_1,sigma),
+          y: normalDistr(mu_1,sigma),
+          label: 1
+        };
+        this.dots.push(dot);
+        this.groups[0].dots.push(dot);
+      }
+      for (var i = 0; i < this.num; i++) {
+        var dot ={
+          mu: mu_2,
+          sigma: sigma,
+          x: normalDistr(mu_2,sigma),
+          y: normalDistr(mu_2,sigma),
+          label: 2
+        };
+        this.dots.push(dot);
+        this.groups[1].dots.push(dot);
+      }
+    },
+    draw: function(hnd){
+        hnd.selectAll(".dot")
+          .data(this.dots)
+          .enter()
+          .append("circle")
+          .attr("class", function(d){
+            if(d.label == 1)
+              return "dd classA";
+            if(d.label == 2)
+              return "dd classB";
+            return "dd unkown";
+          })
+          .attr("r", 3.5)
+          .attr("cx", function(d) { return xScale(d.x);})
+          .attr("cy", function(d) { return yScale(d.y);});
+    },
+    clear: function(hnd){
+      hnd.selectAll(".dd").data(this.dots).remove();
+    }
+  };
+
+  // perceptron classifier
+  var perceptron = {
+    beta : [0.01, 0.01],
+    off  : 0.01,
+    current : null,
+    line: null,
+
+    clear: function(hnd){
+      this.beta = [0.01, 0.01];
+      this.off  = 0.01;
+    },
+
+    classifier: function(x,y){
+      return this.beta[0]*x + this.beta[1]*y + this.off;
+    },
+
+    init : function(hnd){
+      var p = this;
+      var lineWrapper = d3.svg.line()
+      .x(function(d) {return xScale(d.x);})
+      .y(function(d) {return yScale( p.classifier(d.x,d.y)   ); });
+
+      var points = [{x:-4,y:-4}, {x:7,y:7}];
+      this.line = hnd.append("path")
+        .attr("class", "line helper")
+        .attr("id", "perceptron_line")
+        .attr("d", lineWrapper(points));
+
+      this.current = hnd.append("circle")
+        .attr("class", "current")
+        .attr("r", 6);
+    },
+
+
+    step: function(point){
+      this.current
+        .attr("cx", xScale(point.x))
+        .attr("cy", yScale(point.y));
+
+      var t     = (point.label == 1) ? 1 : -1;
+      var y     = (this.classifier(point.x, point.y) > 0) ? 1 : -1;
+      var eta   = 0.7;
+
+      console.log([t, y, this.classifier(point.x, point.y)]);
+
+      this.beta[0] = this.beta[0] + eta * (t - y)*point.x;
+      this.beta[1] = this.beta[1] + eta * (t - y)*point.y;
+      this.off     = this.off     + eta * (t - y)*1;
+
+      if(y==t){
+        this.line.classed("strokeOk",true);
+        this.line.classed("strokeFail",false);
+        this.current.classed("fillOk",true);
+        this.current.classed("fillFail",false);
+      }else{
+        this.line.classed("strokeOk",false);
+        this.line.classed("strokeFail",true);
+        this.current.classed("fillOk",false);
+        this.current.classed("fillFail",true);
+      }
+    },
+
+    update: function(hnd){
+      var p = this;
+      var lineWrapper = d3.svg.line()
+      .x(function(d) {return xScale(d.x);})
+      .y(function(d) {return yScale(p.classifier(d.x, d.y));});
+
+      var points = [{x:-4,y:-4}, {x:7,y:7}];
+      this.line.transition()
+        .duration(1200)
+        .attr("d", lineWrapper(points));
+    }
+  };
+
+  example.init();
+  example.draw(hnd);
+  perceptron.init(hnd);
+
+  var odd = true;
+
+  $('#fig_gaussians_perceptron_new').click(function(){
+    example.clear(hnd);
+    example.init();
+    example.draw(hnd);
+    perceptron.clear(hnd);
+  });
+
+  $('#fig_gaussians_perceptron_step').click(function(){
+    var i = Math.floor(Math.random() * example.num); 
+    if(odd){
+        i += example.num;
+        odd = false;
+    }else{
+      odd = true;
+    }
+    var training = example.dots[i];
+    perceptron.step(training);
+    perceptron.update(hnd);
+  });
+})();
+
+
+</script>
