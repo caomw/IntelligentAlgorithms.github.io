@@ -101,12 +101,15 @@
     classifier: function(x,y){
       return this.beta[0]*x + this.beta[1]*y + this.off;
     },
+    classifierline: function(x,y){
+      return (-this.beta[0]*x - this.off)/this.beta[1];
+    },
 
     init : function(hnd){
       var p = this;
       var lineWrapper = d3.svg.line()
       .x(function(d) {return xScale(d.x);})
-      .y(function(d) {return yScale( p.classifier(d.x,d.y)   ); });
+      .y(function(d) {return yScale( p.classifierline(d.x,d.y)   ); });
 
       var points = [{x:-4,y:-4}, {x:7,y:7}];
       this.line = hnd.append("path")
@@ -152,7 +155,7 @@
       var p = this;
       var lineWrapper = d3.svg.line()
       .x(function(d) {return xScale(d.x);})
-      .y(function(d) {return yScale(p.classifier(d.x, d.y));});
+      .y(function(d) {return yScale(p.classifierline(d.x, d.y));});
 
       var points = [{x:-4,y:-4}, {x:7,y:7}];
       this.line.transition()
